@@ -71,12 +71,58 @@ const useCountdown = (preferredHourUtc: number | null) => {
   return { timeLeft, scheduledLabel };
 };
 
+const RECONNECT_TTL_DAYS = 7;
+
+function formatDurationShort(ms: number): string {
+  const totalMinutes = Math.max(0, Math.floor(ms / (1000 * 60)));
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const minutes = totalMinutes % 60;
+  if (days > 0) return `${days}d ${String(hours).padStart(2, "0")}h`;
+  if (hours > 0) return `${hours}h ${String(minutes).padStart(2, "0")}m`;
+  return `${minutes}m`;
+}
+
+const useReconnectCountdown = (connectedAtIso: string | null | undefined) => {
+  const [label, setLabel] = useState<string>("");
+
+  useEffect(() => {
+    if (!connectedAtIso) {
+      setLabel("");
+      return;
+    }
+    const connectedAtMs = Date.parse(connectedAtIso);
+    if (Number.isNaN(connectedAtMs)) {
+      setLabel("");
+      return;
+    }
+    const expiresAtMs = connectedAtMs + RECONNECT_TTL_DAYS * 24 * 60 * 60 * 1000;
+
+    const update = () => {
+      const now = Date.now();
+      const diff = expiresAtMs - now;
+      if (diff <= 0) {
+        setLabel("Mandatory reconnect now");
+        return;
+      }
+      setLabel(`Mandatory reconnect in ${formatDurationShort(diff)}`);
+    };
+
+    update();
+    const interval = setInterval(update, 60000);
+    return () => clearInterval(interval);
+  }, [connectedAtIso]);
+
+  return label;
+};
+
 const Overview = () => {
   const [hoveredDay, setHoveredDay] = useState<number | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
   const [publishingStatus, setPublishingStatus] = useState<{
     youtube_channel_title?: string | null;
     youtube_channel_status?: string | null;
+    youtube_connected_at?: string | null;
     needs_reconnect: boolean;
     published_today: number;
     daily_video_limit: number;
@@ -94,6 +140,7 @@ const Overview = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { timeLeft: countdown, scheduledLabel } = useCountdown(publishingStatus?.preferred_upload_hour_utc ?? null);
+  const reconnectCountdown = useReconnectCountdown(publishingStatus?.youtube_connected_at);
 
   useEffect(() => {
     const loadPublishing = async () => {
@@ -103,6 +150,7 @@ const Overview = () => {
         const status = await apiFetch<{
           youtube_channel_title?: string | null;
           youtube_channel_status?: string | null;
+          youtube_connected_at?: string | null;
           needs_reconnect: boolean;
           published_today: number;
           daily_video_limit: number;
@@ -297,15 +345,22 @@ const Overview = () => {
                   </span>
                 </span>
                 {publishingStatus?.needs_reconnect && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                    onClick={handleReconnect}
-                    disabled={reconnecting}
-                  >
-                    {reconnecting ? "Redirecting…" : "Reconnect"}
-                  </Button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      onClick={handleReconnect}
+                      disabled={reconnecting}
+                    >
+                      {reconnecting ? "Redirecting…" : "Reconnect"}
+                    </Button>
+                    {reconnectCountdown ? (
+                      <span className="text-xs text-muted-foreground">
+                        {reconnectCountdown}
+                      </span>
+                    ) : null}
+                  </div>
                 )}
               </div>
               {publishingStatus && (
