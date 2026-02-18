@@ -195,14 +195,14 @@ const ContentCalendar = () => {
       const msg = e instanceof Error ? e.message : String(e);
       if (/daily limit|limit reached|already reached/i.test(msg))
         toast({ title: "Daily limit reached", description: "You can publish again tomorrow (UTC).", variant: "destructive" });
-      else if (/no videos found|No videos found/i.test(msg))
-        toast({
-          title: "No videos for this product",
-          description: "Upload .mp4 to storage (or Supabase) under products/<product_id>/videos/ with your product UUID.",
-          variant: "destructive",
-        });
-      else if (/all your videos have already been published|All your videos/i.test(msg))
-        toast({ title: "All videos used", description: "Add new .mp4 files to publish more.", variant: "destructive" });
+      else if (/reconnect|connection expired/i.test(msg))
+        toast({ title: "Reconnect YouTube", description: msg, variant: "destructive" });
+      else if (/no hay vídeos|no videos for this product|no videos found/i.test(msg))
+        toast({ title: "No videos for this product", description: msg, variant: "destructive" });
+      else if (/all your videos have already been published|all videos used/i.test(msg))
+        toast({ title: "All videos used", description: msg, variant: "destructive" });
+      else if (/signed URL|Core upload failed|could not be sent to YouTube/i.test(msg))
+        toast({ title: "Upload failed", description: msg, variant: "destructive" });
       else
         toast({ title: "Error", description: msg || "Could not publish now.", variant: "destructive" });
     } finally {
