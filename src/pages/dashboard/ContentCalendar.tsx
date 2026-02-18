@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Video, Eye, Trash2, Calendar as CalendarIcon, Youtube, RefreshCw, Clock, Loader2 } from "lucide-react";
+import { Video, Eye, Trash2, Calendar as CalendarIcon, Youtube, RefreshCw, Clock, Loader2, Play } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useOnboardingFlow } from "@/hooks/useOnboardingFlow";
 import { useToast } from "@/hooks/use-toast";
@@ -67,7 +67,18 @@ const ContentCalendar = () => {
   const [publishingStatus, setPublishingStatus] = useState<PublishingStatus | null>(null);
   const [reconnecting, setReconnecting] = useState(false);
   const [savingTimes, setSavingTimes] = useState(false);
+  const [publishNowLoading, setPublishNowLoading] = useState(false);
   const [reconnectCountdown, setReconnectCountdown] = useState<string>("—");
+
+  const loadPublishing = async () => {
+    if (!localStorage.getItem("access_token")) return;
+    try {
+      const status = await apiFetch<PublishingStatus>("/publishing/status");
+      setPublishingStatus(status);
+    } catch {
+      setPublishingStatus(null);
+    }
+  };
 
   useEffect(() => {
     const loadChannels = async () => {
@@ -84,15 +95,6 @@ const ContentCalendar = () => {
   }, []);
 
   useEffect(() => {
-    const loadPublishing = async () => {
-      if (!localStorage.getItem("access_token")) return;
-      try {
-        const status = await apiFetch<PublishingStatus>("/publishing/status");
-        setPublishingStatus(status);
-      } catch {
-        setPublishingStatus(null);
-      }
-    };
     loadPublishing();
   }, []);
 
@@ -170,6 +172,23 @@ const ContentCalendar = () => {
     const next = [...timesForSlots];
     next[slotIndex] = hourUtc;
     handleSaveTimes(next);
+  };
+
+  const handlePublishNow = async () => {
+    setPublishNowLoading(true);
+    try {
+      await apiFetch("/publishing/publish-now", { method: "POST" });
+      toast({ title: "Done", description: "Video queued for upload." });
+      await loadPublishing();
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (/daily limit|limit reached|already reached/i.test(msg))
+        toast({ title: "Daily limit reached", description: "You can publish again tomorrow (UTC).", variant: "destructive" });
+      else
+        toast({ title: "Error", description: msg || "Could not publish now.", variant: "destructive" });
+    } finally {
+      setPublishNowLoading(false);
+    }
   };
 
   const stats = useMemo(() => {
@@ -292,6 +311,23 @@ const ContentCalendar = () => {
                   </Select>
                 </div>
               ))}
+              <Button
+                variant="default"
+                size="sm"
+                onClick={handlePublishNow}
+                disabled={
+                  publishNowLoading ||
+                  publishingStatus?.needs_reconnect ||
+                  (publishingStatus != null && publishingStatus.published_today >= publishingStatus.daily_video_limit)
+                }
+              >
+                {publishNowLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : (
+                  <Play className="w-4 h-4 mr-2" />
+                )}
+                Publish NOW
+              </Button>
               {savingTimes && (
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <Loader2 className="w-4 h-4 animate-spin" />
