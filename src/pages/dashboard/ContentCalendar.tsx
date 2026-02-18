@@ -35,15 +35,21 @@ interface PublishingStatus {
 
 const UTC_HOURS = Array.from({ length: 24 }, (_, i) => i);
 
-function formatTokenCountdown(expiresAt: string | null): string {
-  if (!expiresAt) return "—";
-  const exp = new Date(expiresAt).getTime();
+/** Countdown to reconnect recommended (7 days after connection). */
+function formatReconnectCountdown(connectedAt: string | null): string {
+  if (!connectedAt) return "—";
+  const end = new Date(connectedAt).getTime() + 7 * 24 * 60 * 60 * 1000;
   const now = Date.now();
-  const diff = Math.max(0, Math.floor((exp - now) / 1000));
-  if (diff === 0) return "Expired – reconnect recommended";
-  const m = Math.floor(diff / 60);
+  const diff = Math.max(0, Math.floor((end - now) / 1000));
+  if (diff === 0) return "Reconnect recommended";
+  const d = Math.floor(diff / 86400);
+  const h = Math.floor((diff % 86400) / 3600);
+  const m = Math.floor((diff % 3600) / 60);
   const s = diff % 60;
-  return `${m}m ${s}s`;
+  if (d > 0) return `${d}d ${h}h ${m}m`;
+  if (h > 0) return `${h}h ${m}m ${s}s`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
 }
 
 function formatHourUtc(h: number): string {
@@ -61,7 +67,7 @@ const ContentCalendar = () => {
   const [publishingStatus, setPublishingStatus] = useState<PublishingStatus | null>(null);
   const [reconnecting, setReconnecting] = useState(false);
   const [savingTimes, setSavingTimes] = useState(false);
-  const [tokenCountdown, setTokenCountdown] = useState<string>("—");
+  const [reconnectCountdown, setReconnectCountdown] = useState<string>("—");
 
   useEffect(() => {
     const loadChannels = async () => {
@@ -91,15 +97,16 @@ const ContentCalendar = () => {
   }, []);
 
   useEffect(() => {
-    if (!publishingStatus?.token_expires_at) {
-      setTokenCountdown("—");
+    const connectedAt = publishingStatus?.youtube_connected_at ?? null;
+    if (!connectedAt) {
+      setReconnectCountdown("—");
       return;
     }
-    const tick = () => setTokenCountdown(formatTokenCountdown(publishingStatus.token_expires_at));
+    const tick = () => setReconnectCountdown(formatReconnectCountdown(connectedAt));
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [publishingStatus?.token_expires_at]);
+  }, [publishingStatus?.youtube_connected_at]);
 
   useEffect(() => {
     const markViewed = async () => {
@@ -227,8 +234,8 @@ const ContentCalendar = () => {
             <div className="flex items-center gap-3">
               <p className="text-xs text-muted-foreground flex items-center gap-1.5 tabular-nums">
                 <Clock className="w-3.5 h-3.5 shrink-0" />
-                {publishingStatus?.token_expires_at
-                  ? tokenCountdown
+                {publishingStatus?.youtube_connected_at
+                  ? reconnectCountdown
                   : "—"}
               </p>
               <Button
