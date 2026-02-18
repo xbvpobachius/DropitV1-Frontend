@@ -5,15 +5,28 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, CreditCard, Bell, Shield } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { User, CreditCard, Bell, Shield, Clock } from "lucide-react";
 import NavbarWithScroll from "@/components/NavbarWithScroll";
 import { useToast } from "@/hooks/use-toast";
+import { apiFetch } from "@/lib/api";
 
 const Settings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [publishingStatus, setPublishingStatus] = useState<{
+    daily_video_limit: number;
+    preferred_upload_hour_utc?: number | null;
+  } | null>(null);
+  const [savingHour, setSavingHour] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -35,6 +48,45 @@ const Settings = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  useEffect(() => {
+    if (!user || !localStorage.getItem("access_token")) return;
+    apiFetch<{
+      daily_video_limit: number;
+      preferred_upload_hour_utc?: number | null;
+    }>("/publishing/status")
+      .then(setPublishingStatus)
+      .catch(() => setPublishingStatus(null));
+  }, [user]);
+
+  const handleUploadHourChange = async (hourUtc: string) => {
+    const value = hourUtc === "none" ? null : parseInt(hourUtc, 10);
+    setSavingHour(true);
+    try {
+      const updated = await apiFetch<{ preferred_upload_hour_utc?: number | null }>("/publishing/settings", {
+        method: "PATCH",
+        body: JSON.stringify({ preferred_upload_hour_utc: value }),
+      });
+      setPublishingStatus((prev) =>
+        prev ? { ...prev, preferred_upload_hour_utc: updated.preferred_upload_hour_utc ?? null } : null
+      );
+      toast({
+        title: "Hora desada",
+        description:
+          value != null
+            ? `Es publicarà ${publishingStatus?.daily_video_limit ?? 1} vídeo/dia a les ${String(value).padStart(2, "0")}:00 UTC.`
+            : "Hora de pujada esborrada.",
+      });
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: e instanceof Error ? e.message : "No s'ha pogut desar la hora",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingHour(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -106,6 +158,51 @@ const Settings = () => {
                   <Button variant="secondary" onClick={() => navigate("/pricing")}>
                     Upgrade Plan
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Programació de vídeos (hora de pujada diària) */}
+            <Card className="card-premium">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-primary" />
+                  Programació de vídeos
+                </CardTitle>
+                <CardDescription>
+                  Segons el teu pla es publica fins a {publishingStatus?.daily_video_limit ?? 1} vídeo/dia. Tria a quina hora (UTC) vols la pujada diària.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Label className="text-sm font-medium">Hora de pujada (UTC)</Label>
+                  <Select
+                    value={
+                      publishingStatus?.preferred_upload_hour_utc != null
+                        ? String(publishingStatus.preferred_upload_hour_utc)
+                        : "none"
+                    }
+                    onValueChange={handleUploadHourChange}
+                    disabled={savingHour}
+                  >
+                    <SelectTrigger className="w-[160px]">
+                      <SelectValue placeholder="Tria l'hora" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No configurada</SelectItem>
+                      {Array.from({ length: 24 }, (_, i) => (
+                        <SelectItem key={i} value={String(i)}>
+                          {String(i).padStart(2, "0")}:00 UTC
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {publishingStatus?.preferred_upload_hour_utc != null && (
+                    <span className="text-sm text-muted-foreground">
+                      {publishingStatus.daily_video_limit} vídeo(s)/dia a les{" "}
+                      {String(publishingStatus.preferred_upload_hour_utc).padStart(2, "0")}:00 UTC
+                    </span>
+                  )}
                 </div>
               </CardContent>
             </Card>

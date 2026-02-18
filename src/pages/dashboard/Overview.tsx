@@ -373,7 +373,9 @@ const Overview = () => {
                 </div>
               )}
               <div className="flex flex-wrap items-center gap-3 mb-3">
-                <span className="text-sm text-muted-foreground">Hora de pujada:</span>
+                <span className="text-sm text-muted-foreground">
+                  Hora de pujada diària ({publishingStatus?.daily_video_limit ?? 1} vídeo/dia segons el teu pla):
+                </span>
                 <Select
                   value={
                     publishingStatus?.preferred_upload_hour_utc != null
@@ -397,7 +399,7 @@ const Overview = () => {
                 </Select>
                 {publishingStatus?.preferred_upload_hour_utc != null && (
                   <span className="text-xs text-muted-foreground">
-                    Els vídeos es penjaran cada dia a aquesta hora (UTC).
+                    Es publicarà {publishingStatus.daily_video_limit} vídeo(s)/dia a les {String(publishingStatus.preferred_upload_hour_utc).padStart(2, "0")}:00 UTC.
                   </span>
                 )}
               </div>
