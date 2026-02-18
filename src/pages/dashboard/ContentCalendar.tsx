@@ -52,10 +52,21 @@ function formatReconnectCountdown(connectedAt: string | null): string {
   return `${s}s`;
 }
 
+const TIMEZONE_SPAIN = "Europe/Madrid";
+
+/** Format UTC hour as "X:00 UTC (Y:00 España)" so CET/CEST is clear. */
 function formatHourUtc(h: number): string {
+  const d = new Date();
+  const utcDate = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), h, 0, 0));
+  const spainTime = utcDate.toLocaleTimeString("es-ES", {
+    timeZone: TIMEZONE_SPAIN,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
   const h12 = h % 12 || 12;
   const ampm = h < 12 ? "AM" : "PM";
-  return `${h12}:00 ${ampm} UTC`;
+  return `${h12}:00 ${ampm} UTC (${spainTime} España)`;
 }
 
 const ContentCalendar = () => {
@@ -284,14 +295,14 @@ const ContentCalendar = () => {
             <h3 className="text-lg font-semibold mb-2">Daily publication time(s)</h3>
             <p className="text-sm text-muted-foreground mb-4">
               {dailyLimit === 1
-                ? "Choose the UTC hour when your video will be published each day."
-                : `Your plan allows ${dailyLimit} videos per day. Set the UTC hour for each slot.`}
+                ? "Elige la hora de publicación (se guarda en UTC; se muestra también en hora España CET/CEST)."
+                : `Tu plan permite ${dailyLimit} vídeos al día. Elige la hora para cada slot (UTC y hora España).`}
             </p>
             <div className="flex flex-wrap gap-4 items-end">
               {timesForSlots.map((hour, slotIndex) => (
                 <div key={slotIndex} className="space-y-2 min-w-[140px]">
                   <Label>
-                    {dailyLimit === 1 ? "Publication time (UTC)" : `Video ${slotIndex + 1}`}
+                    {dailyLimit === 1 ? "Hora de publicación" : `Video ${slotIndex + 1}`}
                   </Label>
                   <Select
                     value={String(hour)}
