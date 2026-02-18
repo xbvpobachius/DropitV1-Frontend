@@ -222,23 +222,25 @@ const ContentCalendar = () => {
               <div>
                 <p className="text-sm text-muted-foreground">Connected channel</p>
                 <p className="font-semibold">{youtubeChannel.channel_title || "YouTube"}</p>
-                <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                  <Clock className="w-3 h-3 shrink-0" />
-                  {publishingStatus?.token_expires_at
-                    ? <>Token refresh in: <span className="tabular-nums">{tokenCountdown}</span></>
-                    : "Reconnect to see token countdown"}
-                </p>
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleReconnect}
-              disabled={reconnecting}
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              {reconnecting ? "Redirecting to Google…" : "Reconnect"}
-            </Button>
+            <div className="flex items-center gap-3">
+              <p className="text-xs text-muted-foreground flex items-center gap-1.5 tabular-nums">
+                <Clock className="w-3.5 h-3.5 shrink-0" />
+                {publishingStatus?.token_expires_at
+                  ? tokenCountdown
+                  : "—"}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleReconnect}
+                disabled={reconnecting}
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                {reconnecting ? "Redirecting…" : "Reconnect"}
+              </Button>
+            </div>
           </Card>
         )}
 
