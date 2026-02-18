@@ -222,12 +222,12 @@ const ContentCalendar = () => {
               <div>
                 <p className="text-sm text-muted-foreground">Connected channel</p>
                 <p className="font-semibold">{youtubeChannel.channel_title || "YouTube"}</p>
-                {(publishingStatus?.token_expires_at || tokenCountdown !== "—") && (
-                  <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    Token refresh in: {tokenCountdown}
-                  </p>
-                )}
+                <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                  <Clock className="w-3 h-3 shrink-0" />
+                  {publishingStatus?.token_expires_at
+                    ? <>Token refresh in: <span className="tabular-nums">{tokenCountdown}</span></>
+                    : "Reconnect to see token countdown"}
+                </p>
               </div>
             </div>
             <Button
