@@ -1,17 +1,13 @@
-import { Package, Store, Youtube, Calendar, LayoutDashboard } from "lucide-react";
+import { Youtube, Calendar, LayoutDashboard } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useOnboardingFlow } from "@/hooks/useOnboardingFlow";
 
 const DashboardSidebar = () => {
   const { progress } = useOnboardingFlow();
-  const onboardingDone = Boolean(
-    progress?.product_selected && progress?.store_created && progress?.youtube_connected
-  );
+  const onboardingDone = Boolean(progress?.youtube_connected);
   const showOnboarding = !onboardingDone;
 
   const onboardingItems = [
-    { icon: Package, label: "Select product", path: "/dashboard/select-product" },
-    { icon: Store, label: "Create store", path: "/dashboard/create-store" },
     { icon: Youtube, label: "Connect YouTube", path: "/dashboard/connect-youtube" },
   ];
 

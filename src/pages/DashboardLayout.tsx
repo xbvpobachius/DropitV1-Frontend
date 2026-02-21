@@ -5,7 +5,7 @@ import NavbarWithScroll from "@/components/NavbarWithScroll";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import { useOnboardingFlow } from "@/hooks/useOnboardingFlow";
 
-const ONBOARDING_ONLY_PATHS = ["/dashboard/select-product", "/dashboard/create-store"];
+const ONBOARDING_ONLY_PATHS: string[] = [];
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
@@ -14,9 +14,7 @@ const DashboardLayout = () => {
   const { progress, loading: progressLoading } = useOnboardingFlow();
   const [loading, setLoading] = useState(true);
 
-  const onboardingDone = Boolean(
-    progress?.product_selected && progress?.store_created && progress?.youtube_connected
-  );
+  const onboardingDone = Boolean(progress?.youtube_connected);
 
   const showSidebar = !progressLoading && progress && (!onboardingDone || (onboardingDone && storesLimit > 1));
 

@@ -79,7 +79,7 @@ const Pricing = () => {
 
       if (data?.url) {
         window.open(data.url, "_blank");
-        setTimeout(() => navigate("/dashboard/select-product"), 1000);
+        setTimeout(() => navigate("/dashboard/connect-youtube"), 1000);
       } else {
         throw new Error("No checkout URL returned");
       }
@@ -149,7 +149,7 @@ const Pricing = () => {
 
     // Use window.location for hard navigation to ensure state refresh
     setTimeout(() => {
-      window.location.href = "/dashboard/select-product";
+      window.location.href = "/dashboard/connect-youtube";
     }, 500);
   };
 

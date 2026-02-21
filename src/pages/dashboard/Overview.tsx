@@ -269,7 +269,7 @@ const Overview = () => {
         return;
       }
       toast({ title: "Removed from queue", description: "You can add new content in the Content Calendar." });
-      setTimeout(() => { navigate("/dashboard/select-product"); }, 1000);
+      setTimeout(() => { navigate("/dashboard/connect-youtube"); }, 1000);
     } catch (error) {
         console.error("Error removing content:", error);
       toast({ title: "Error", description: "Something went wrong.", variant: "destructive" });

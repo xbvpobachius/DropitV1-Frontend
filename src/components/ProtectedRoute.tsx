@@ -36,11 +36,7 @@ export const ProtectedRoute = ({ children, requiredStep }: ProtectedRouteProps) 
     }
 
     // If onboarding is completed and trying to access onboarding steps, redirect to overview
-    const onboardingSteps = [
-      "/dashboard/select-product",
-      "/dashboard/create-store", 
-      "/dashboard/connect-youtube"
-    ];
+    const onboardingSteps = ["/dashboard/connect-youtube"];
     
     if (progress?.onboarding_completed && onboardingSteps.includes(requiredStep)) {
       console.log("Onboarding completed, redirecting to overview");

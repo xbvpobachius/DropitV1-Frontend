@@ -11,8 +11,6 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Pricing from "./pages/Pricing";
 import DashboardLayout from "./pages/DashboardLayout";
-import SelectProduct from "./pages/dashboard/SelectProduct";
-import CreateStore from "./pages/dashboard/CreateStore";
 import ConnectInstagram from "./pages/dashboard/ConnectInstagram";
 import ContentCalendar from "./pages/dashboard/ContentCalendar";
 import Notifications from "./pages/dashboard/Notifications";
@@ -61,8 +59,8 @@ const App = () => (
           {/* Dashboard routes with sidebar */}
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<DashboardRedirect />} />
-            <Route path="select-product" element={<SelectProduct />} />
-            <Route path="create-store" element={<CreateStore />} />
+            <Route path="select-product" element={<Navigate to="/dashboard/connect-youtube" replace />} />
+            <Route path="create-store" element={<Navigate to="/dashboard/connect-youtube" replace />} />
             <Route path="connect-youtube" element={<ConnectInstagram />} />
             <Route path="connect-instagram" element={<Navigate to="connect-youtube" replace />} />
             <Route path="calendar" element={<ContentCalendar />} />

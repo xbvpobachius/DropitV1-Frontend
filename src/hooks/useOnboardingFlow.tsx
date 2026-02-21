@@ -114,30 +114,22 @@ export const useOnboardingFlow = () => {
   };
 
   const getNextStep = (): string => {
-    if (!progress) return "/dashboard/select-product";
-    
-    if (!progress.product_selected) return "/dashboard/select-product";
-    if (!progress.store_created) return "/dashboard/create-store";
+    if (!progress) return "/dashboard/connect-youtube";
     if (!progress.youtube_connected) return "/dashboard/connect-youtube";
     if (!progress.calendar_viewed) return "/dashboard/calendar";
-    
     return "/dashboard/overview";
   };
 
   const canAccessStep = (step: string): boolean => {
-    if (!progress) return step === "/dashboard/select-product";
+    if (!progress) return step === "/dashboard/connect-youtube";
 
     switch (step) {
-      case "/dashboard/select-product":
-        return true;
-      case "/dashboard/create-store":
-        return progress.product_selected;
       case "/dashboard/connect-youtube":
-        return progress.product_selected && progress.store_created;
+        return true;
       case "/dashboard/calendar":
-        return progress.product_selected && progress.store_created && progress.youtube_connected;
+        return progress.youtube_connected;
       case "/dashboard/overview":
-        return progress.product_selected && progress.store_created && progress.youtube_connected && progress.calendar_viewed;
+        return progress.youtube_connected && progress.calendar_viewed;
       default:
         return false;
     }
