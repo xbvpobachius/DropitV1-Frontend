@@ -299,20 +299,26 @@ const Overview = () => {
 
   return (
     <ProtectedRoute requiredStep="/dashboard/overview">
-      <div className="p-8 pt-24 max-w-7xl mx-auto bg-blue-50/30 min-h-screen">
-        <div className="mb-10 flex items-start justify-between">
+      <div>
+        <div className="mb-10 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight mb-1.5">
-              Dashboard
-            </h1>
-            <p className="text-muted-foreground text-sm">Content workflow and publishing status</p>
+            <div className="flex items-center gap-2.5 mb-1">
+              <h1 className="font-display text-3xl font-bold">Dashboard</h1>
+              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${publishingStatus?.needs_reconnect ? "bg-amber-500/10 border-amber-500/20" : "bg-success/10 border-success/20"}`}>
+                <div className={`w-1.5 h-1.5 rounded-full ${publishingStatus?.needs_reconnect ? "bg-amber-500 animate-pulse" : "bg-success animate-pulse"}`} />
+                <span className={`text-[10px] font-medium ${publishingStatus?.needs_reconnect ? "text-amber-600" : "text-success"}`}>
+                  {publishingStatus?.needs_reconnect ? "Reconnect required" : "All systems online"}
+                </span>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground">Content workflow and publishing status</p>
           </div>
           <ApiStatusIndicator />
         </div>
 
         {/* Empty state: no content selected */}
         {!selectedProduct && (
-          <Card className="mb-8 overflow-hidden border border-dashed border-border bg-white">
+          <Card className="mb-8 overflow-hidden border border-dashed border-border rounded-2xl">
             <div className="p-12 flex flex-col items-center justify-center text-center">
               <div className="w-16 h-16 rounded-2xl bg-muted/80 flex items-center justify-center mb-5">
                 <Package className="w-8 h-8 text-muted-foreground" />
@@ -330,7 +336,7 @@ const Overview = () => {
 
         {/* Active Content Banner */}
         {selectedProduct && (
-        <Card className="mb-8 overflow-hidden border border-border bg-white shadow-sm">
+        <Card className="mb-8 overflow-hidden border border-border rounded-2xl shadow-sm">
           <div className="flex items-center gap-6 p-6">
             <div className="w-28 h-28 rounded-xl overflow-hidden flex-shrink-0 ring-1 ring-border/50">
               <img src={selectedProduct.image} alt={selectedProduct.name} className="w-full h-full object-cover" />
@@ -456,7 +462,7 @@ const Overview = () => {
 
         {/* Publishing logs */}
         {publishingLogs.length > 0 && (
-          <Card className="mb-8 border border-border bg-white">
+          <Card className="mb-8 border border-border rounded-2xl">
             <CardHeader>
               <CardTitle className="text-base font-semibold">Publish history</CardTitle>
               <CardDescription className="text-sm">Recent automated uploads</CardDescription>
@@ -477,46 +483,46 @@ const Overview = () => {
         )}
 
         {/* Stats */}
-        <div className="grid md:grid-cols-4 gap-4 mb-8">
-          <Card className="p-5 border border-border bg-white">
+        <div className="grid md:grid-cols-4 gap-5 mb-8">
+          <Card className="p-6 border border-border rounded-2xl hover-glow transition-all">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Content</span>
               <Package className="h-4 w-4 text-muted-foreground/60" />
             </div>
-            <div className="text-2xl font-semibold tracking-tight">1</div>
+            <div className="font-display text-4xl font-bold tracking-tight">1</div>
             <p className="text-xs text-muted-foreground mt-1">In queue</p>
           </Card>
 
-          <Card className="p-5 border border-border bg-white">
+          <Card className="p-6 border border-border rounded-2xl hover-glow transition-all">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Shorts</span>
               <Video className="h-4 w-4 text-muted-foreground/60" />
             </div>
-            <div className="text-2xl font-semibold tracking-tight">24</div>
+            <div className="font-display text-4xl font-bold tracking-tight">24</div>
             <p className="text-xs text-muted-foreground mt-1">This month</p>
           </Card>
 
-          <Card className="p-5 border border-border bg-white">
+          <Card className="p-6 border border-border rounded-2xl hover-glow transition-all">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Views</span>
               <TrendingUp className="h-4 w-4 text-muted-foreground/60" />
             </div>
-            <div className="text-2xl font-semibold tracking-tight">12.4K</div>
+            <div className="font-display text-4xl font-bold tracking-tight">12.4K</div>
             <p className="text-xs text-muted-foreground mt-1">+15% vs last week</p>
           </Card>
 
-          <Card className="p-5 border border-border bg-white">
+          <Card className="p-6 border border-border rounded-2xl hover-glow transition-all">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Watch time</span>
               <BarChart3 className="h-4 w-4 text-muted-foreground/60" />
             </div>
-            <div className="text-2xl font-semibold tracking-tight">42h</div>
+            <div className="font-display text-4xl font-bold tracking-tight">42h</div>
             <p className="text-xs text-muted-foreground mt-1">Total</p>
           </Card>
         </div>
 
         {/* Automation */}
-        <Card className="mb-8 border border-border bg-white">
+        <Card className="mb-8 border border-border rounded-2xl">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Youtube className="h-4 w-4 text-muted-foreground" />

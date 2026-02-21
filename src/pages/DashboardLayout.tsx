@@ -3,6 +3,7 @@ import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import NavbarWithScroll from "@/components/NavbarWithScroll";
 import DashboardSidebar from "@/components/DashboardSidebar";
+import AppShell from "@/components/AppShell";
 import { useOnboardingFlow } from "@/hooks/useOnboardingFlow";
 
 const ONBOARDING_ONLY_PATHS: string[] = [];
@@ -51,11 +52,19 @@ const DashboardLayout = () => {
     );
   }
 
+  if (showSidebar) {
+    return (
+      <AppShell>
+        <Outlet />
+      </AppShell>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-blue-50/30">
       <NavbarWithScroll />
       <div className="flex w-full">
-        {showSidebar && <DashboardSidebar />}
+        <DashboardSidebar />
         <main className="flex-1 min-h-screen">
           <Outlet />
         </main>

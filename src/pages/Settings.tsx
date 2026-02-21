@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { User, CreditCard, Bell, Shield, Clock } from "lucide-react";
-import NavbarWithScroll from "@/components/NavbarWithScroll";
 import { useToast } from "@/hooks/use-toast";
 import { apiFetch } from "@/lib/api";
 
@@ -29,23 +28,21 @@ const Settings = () => {
   const [savingHour, setSavingHour] = useState(false);
 
   useEffect(() => {
+    if (!localStorage.getItem("access_token")) {
+      navigate("/auth");
+      return;
+    }
+    const email = localStorage.getItem("user_email");
+    if (email) {
+      setUser({ email });
+    }
+    setLoading(false);
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate("/auth");
-      } else {
-        setUser(session.user);
-        setLoading(false);
-      }
+      if (session) setUser(session.user);
     });
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        navigate("/auth");
-      } else {
-        setUser(session.user);
-      }
+      if (session) setUser(session.user);
     });
-
     return () => subscription.unsubscribe();
   }, [navigate]);
 
@@ -90,23 +87,23 @@ const Settings = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-muted/30 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-primary border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <NavbarWithScroll />
-      
-      <main className="pt-24 pb-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold mb-8">Settings</h1>
+    <div>
+      <div className="mb-10">
+        <h1 className="font-display text-3xl font-bold">Settings</h1>
+        <p className="text-sm text-muted-foreground mt-2">Manage your account and connections.</p>
+      </div>
+      <div className="max-w-3xl">
 
-          <div className="space-y-6">
+          <div className="space-y-7">
             {/* Account Settings */}
-            <Card className="bg-white border border-border">
+            <Card className="rounded-2xl border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <User className="h-5 w-5 text-primary" />
@@ -141,7 +138,7 @@ const Settings = () => {
             </Card>
 
             {/* Subscription */}
-            <Card className="bg-white border border-border">
+            <Card className="rounded-2xl border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CreditCard className="h-5 w-5 text-primary" />
@@ -163,7 +160,7 @@ const Settings = () => {
             </Card>
 
             {/* Programació de vídeos (hora de pujada diària) */}
-            <Card className="bg-white border border-border">
+            <Card className="rounded-2xl border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="h-5 w-5 text-primary" />
@@ -208,7 +205,7 @@ const Settings = () => {
             </Card>
 
             {/* Notifications */}
-            <Card className="bg-white border border-border">
+            <Card className="rounded-2xl border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="h-5 w-5 text-primary" />
@@ -235,7 +232,7 @@ const Settings = () => {
             </Card>
 
             {/* Security */}
-            <Card className="bg-white border border-border">
+            <Card className="rounded-2xl border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="h-5 w-5 text-primary" />
@@ -249,8 +246,7 @@ const Settings = () => {
               </CardContent>
             </Card>
           </div>
-        </div>
-      </main>
+      </div>
     </div>
   );
 };

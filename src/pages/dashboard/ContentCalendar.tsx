@@ -252,14 +252,14 @@ const ContentCalendar = () => {
 
   return (
     <ProtectedRoute requiredStep="/dashboard/calendar">
-      <div className="p-8 pt-24 max-w-7xl mx-auto bg-blue-50/30 min-h-screen">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Content Calendar</h1>
-          <p className="text-muted-foreground">Manage your automated video schedule</p>
+      <div>
+        <div className="mb-10">
+          <h1 className="font-display text-3xl font-bold">Calendar</h1>
+          <p className="text-sm text-muted-foreground mt-2">Your publishing schedule at a glance.</p>
         </div>
 
         {youtubeChannel && (
-          <Card className="bg-white border border-border p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
+          <Card className="rounded-2xl border border-border p-6 mb-6 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
                 <Youtube className="w-5 h-5 text-red-600" />
@@ -291,7 +291,7 @@ const ContentCalendar = () => {
 
         <div className="grid md:grid-cols-3 gap-6 mb-6">
           {stats.map((stat, index) => (
-            <Card key={index} className="bg-white border border-border p-6">
+            <Card key={index} className="rounded-2xl border border-border p-6">
               <div className="text-sm text-muted-foreground mb-1">{stat.label}</div>
               <div className="text-3xl font-bold text-primary">{stat.value}</div>
             </Card>
@@ -299,7 +299,7 @@ const ContentCalendar = () => {
         </div>
 
         {youtubeChannel && publishingStatus && (
-          <Card className="bg-white border border-border p-6 mb-8">
+          <Card className="rounded-2xl border border-border p-6 mb-8">
             <h3 className="text-lg font-semibold mb-2">Daily publication time(s)</h3>
             <p className="text-sm text-muted-foreground mb-4">
               {dailyLimit === 1
@@ -357,7 +357,7 @@ const ContentCalendar = () => {
           </Card>
         )}
 
-        <Card className="bg-white border border-border p-6">
+        <Card className="rounded-2xl border border-border p-6 overflow-hidden">
           <div className="grid grid-cols-7 gap-4">
             {scheduledVideos.slice(0, 28).map((video) => (
               <Dialog key={video.day}>

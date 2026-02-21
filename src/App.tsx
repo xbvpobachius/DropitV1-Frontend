@@ -15,6 +15,7 @@ import ConnectInstagram from "./pages/dashboard/ConnectInstagram";
 import ContentCalendar from "./pages/dashboard/ContentCalendar";
 import Notifications from "./pages/dashboard/Notifications";
 import Overview from "./pages/dashboard/Overview";
+import UploadPage from "./pages/dashboard/Upload";
 import Products from "./pages/Products";
 import Settings from "./pages/Settings";
 import Help from "./pages/Help";
@@ -47,13 +48,14 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Navigate to="/auth" replace />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/billing/success" element={<BillingSuccess />} />
           <Route path="/billing/cancel" element={<BillingCancel />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/products" element={<Products />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/settings" element={<Navigate to="/dashboard/settings" replace />} />
           <Route path="/help" element={<Help />} />
           
           {/* Dashboard routes with sidebar */}
@@ -64,6 +66,8 @@ const App = () => (
             <Route path="connect-youtube" element={<ConnectInstagram />} />
             <Route path="connect-instagram" element={<Navigate to="connect-youtube" replace />} />
             <Route path="calendar" element={<ContentCalendar />} />
+            <Route path="upload" element={<UploadPage />} />
+            <Route path="settings" element={<Settings />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="overview" element={<Overview />} />
           </Route>
