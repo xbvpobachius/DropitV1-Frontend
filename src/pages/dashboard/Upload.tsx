@@ -46,8 +46,8 @@ const UploadPage = () => {
       );
       if (valid.length !== list.length) {
         toast({
-          title: "Alguns fitxers omesos",
-          description: "Només MP4, MOV o WebM fins a 500MB.",
+          title: "Some files skipped",
+          description: "Only MP4, MOV or WebM up to 500MB.",
           variant: "destructive",
         });
       }
@@ -93,11 +93,11 @@ const UploadPage = () => {
         )
       );
       toast({
-        title: "Vídeo programat",
-        description: `${pending.file.name} programat correctament.`,
+        title: "Video scheduled",
+        description: `${pending.file.name} scheduled successfully.`,
       });
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Error de pujada";
+      const msg = e instanceof Error ? e.message : "Upload error";
       setFiles((f) =>
         f.map((x) =>
           x.id === pending.id ? { ...x, status: "error", error: msg } : x
@@ -139,7 +139,7 @@ const UploadPage = () => {
       <div className="mb-10">
         <h1 className="font-display text-3xl font-bold">Upload</h1>
         <p className="text-sm text-muted-foreground mt-2">
-          Puja els teus Shorts i programeu-los. S'aplicarà un marge de ±10 min per un algoritme més net.
+          Upload your Shorts and schedule them. A ±10 min random margin will be applied for a cleaner algorithm.
         </p>
       </div>
 
@@ -172,8 +172,8 @@ const UploadPage = () => {
           <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-6 glow-sm group-hover:glow transition-all duration-300">
             <UploadIcon className="h-9 w-9 text-primary" />
           </div>
-          <p className="font-display font-semibold text-xl mb-2">Deixa els vídeos aquí</p>
-          <p className="text-base text-muted-foreground mb-6">o clica per buscar · MP4, MOV, WebM fins a 500MB</p>
+          <p className="font-display font-semibold text-xl mb-2">Drop your videos here</p>
+          <p className="text-base text-muted-foreground mb-6">or click to browse · MP4, MOV, WebM up to 500MB</p>
         </label>
       </motion.div>
 
@@ -186,15 +186,15 @@ const UploadPage = () => {
         >
           <div className="p-6 border-b border-border flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <h2 className="font-display font-semibold text-lg">{files.length} vídeos</h2>
+              <h2 className="font-display font-semibold text-lg">{files.length} videos</h2>
               {doneCount > 0 && (
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-600 dark:text-green-400 font-semibold">
-                  {doneCount} pujats
+                  {doneCount} uploaded
                 </span>
               )}
               {pendingCount > 0 && (
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold">
-                  {pendingCount} pendents
+                  {pendingCount} pending
                 </span>
               )}
             </div>
@@ -205,12 +205,12 @@ const UploadPage = () => {
                   className="rounded-full px-5 glow-sm"
                   onClick={uploadAll}
                 >
-                  Pujar tots
+                  Upload all
                 </Button>
               )}
               <Link to="/dashboard/calendar">
                 <Button size="sm" variant="outline" className="rounded-full px-5">
-                  Veure calendari
+                  View calendar
                 </Button>
               </Link>
             </div>
@@ -239,7 +239,7 @@ const UploadPage = () => {
                     <div className="flex items-center gap-3 mt-1">
                       <p className="text-xs text-muted-foreground">{formatFileSize(item.file.size)}</p>
                       {item.status === "uploading" && (
-                        <span className="text-xs text-primary">Pujant...</span>
+                        <span className="text-xs text-primary">Uploading...</span>
                       )}
                       {item.status === "error" && (
                         <span className="text-xs text-destructive">{item.error}</span>
@@ -250,7 +250,7 @@ const UploadPage = () => {
                 {item.status === "pending" && (
                   <div className="flex items-center gap-3 flex-wrap">
                     <div className="flex items-center gap-2">
-                      <Label className="text-xs text-muted-foreground">Data</Label>
+                      <Label className="text-xs text-muted-foreground">Date</Label>
                       <Input
                         type="date"
                         value={item.scheduledDate}
@@ -261,7 +261,7 @@ const UploadPage = () => {
                       />
                     </div>
                     <div className="flex items-center gap-2">
-                      <Label className="text-xs text-muted-foreground">Hora (UTC)</Label>
+                      <Label className="text-xs text-muted-foreground">Hour (UTC)</Label>
                       <Input
                         type="number"
                         min={0}
@@ -285,7 +285,7 @@ const UploadPage = () => {
                 {item.status === "done" && (
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <Calendar className="h-3.5 w-3.5" />
-                    Programat (±10 min)
+                    Scheduled (±10 min)
                   </div>
                 )}
                 <button

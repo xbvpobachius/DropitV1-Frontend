@@ -33,7 +33,7 @@ interface ScheduledResponse {
   days: Record<number, ScheduledVideo[]>;
 }
 
-const daysOfWeek = ["Dl", "Dt", "Dc", "Dj", "Dv", "Ds", "Dg"];
+const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const getDaysInMonth = (year: number, month: number) =>
   new Date(year, month, 0).getDate();
@@ -46,7 +46,7 @@ const getFirstDayOfMonth = (year: number, month: number) => {
 const formatTime = (iso: string) => {
   try {
     const d = new Date(iso);
-    return d.toLocaleTimeString("ca-ES", { hour: "2-digit", minute: "2-digit" });
+    return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
   } catch {
     return "";
   }
@@ -103,16 +103,16 @@ const ContentCalendar = () => {
         prev ? { ...prev, preferred_upload_hour_utc: updated.preferred_upload_hour_utc ?? null } : null
       );
       toast({
-        title: "Hora desada",
+        title: "Hour saved",
         description:
           value != null
-            ? `Es publicarà ${publishingStatus?.daily_video_limit ?? 1} vídeo/dia a les ${String(value).padStart(2, "0")}:00 UTC.`
-            : "Hora de pujada esborrada.",
+            ? `${publishingStatus?.daily_video_limit ?? 1} video(s)/day will be published at ${String(value).padStart(2, "0")}:00 UTC.`
+            : "Upload hour cleared.",
       });
     } catch (e) {
       toast({
         title: "Error",
-        description: e instanceof Error ? e.message : "No s'ha pogut desar la hora",
+        description: e instanceof Error ? e.message : "Could not save the hour",
         variant: "destructive",
       });
     } finally {
@@ -138,7 +138,7 @@ const ContentCalendar = () => {
     }
   };
 
-  const monthName = new Date(year, month - 1).toLocaleDateString("ca-ES", {
+  const monthName = new Date(year, month - 1).toLocaleDateString("en-US", {
     month: "long",
     year: "numeric",
   });
@@ -162,16 +162,16 @@ const ContentCalendar = () => {
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <div className="mb-10 flex items-center justify-between">
         <div>
-          <h1 className="font-display text-3xl font-bold">Calendari</h1>
+          <h1 className="font-display text-3xl font-bold">Calendar</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            La teva programació de publicacions.
+            Your publishing schedule at a glance.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Link to="/dashboard/upload">
             <Button variant="outline" size="sm" className="rounded-full gap-2">
               <Upload className="h-4 w-4" />
-              Pujar vídeos
+              Upload videos
             </Button>
           </Link>
           <div className="flex items-center gap-2 bg-card border border-border rounded-xl p-1.5">
@@ -199,15 +199,15 @@ const ContentCalendar = () => {
             <Clock className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h2 className="font-display font-semibold text-lg">Hora de publicació preferida</h2>
+            <h2 className="font-display font-semibold text-lg">Preferred publishing time</h2>
             <p className="text-sm text-muted-foreground">
-              Segons el teu pla es publica fins a {publishingStatus?.daily_video_limit ?? 1}{" "}
-              vídeo/dia. Tria a quina hora (UTC) vols la pujada diària.
+              According to your plan, up to {publishingStatus?.daily_video_limit ?? 1}{" "}
+              video(s)/day can be published. Choose your preferred daily upload time (UTC).
             </p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <Label className="text-sm font-medium">Hora de pujada (UTC)</Label>
+          <Label className="text-sm font-medium">Upload hour (UTC)</Label>
           <Select
             value={
               publishingStatus?.preferred_upload_hour_utc != null
@@ -218,10 +218,10 @@ const ContentCalendar = () => {
             disabled={savingHour}
           >
             <SelectTrigger className="w-[160px] rounded-xl">
-              <SelectValue placeholder="Tria l'hora" />
+              <SelectValue placeholder="Choose hour" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">No configurada</SelectItem>
+              <SelectItem value="none">Not set</SelectItem>
               {Array.from({ length: 24 }, (_, i) => (
                 <SelectItem key={i} value={String(i)}>
                   {String(i).padStart(2, "0")}:00 UTC
@@ -231,7 +231,7 @@ const ContentCalendar = () => {
           </Select>
           {publishingStatus?.preferred_upload_hour_utc != null && (
             <span className="text-sm text-muted-foreground">
-              {publishingStatus.daily_video_limit} vídeo(s)/dia a les{" "}
+              {publishingStatus.daily_video_limit} video(s)/day at{" "}
               {String(publishingStatus.preferred_upload_hour_utc).padStart(2, "0")}:00 UTC
             </span>
           )}
@@ -307,7 +307,7 @@ const ContentCalendar = () => {
         </div>
         {loading && (
           <div className="absolute inset-0 bg-background/60 flex items-center justify-center z-10">
-            <span className="text-sm text-muted-foreground">Carregant...</span>
+            <span className="text-sm text-muted-foreground">Loading...</span>
           </div>
         )}
       </motion.div>
