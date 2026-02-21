@@ -33,7 +33,7 @@ const Help = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-muted/30">
       <NavbarWithScroll />
       
       <main className="pt-44 pb-20">
@@ -49,7 +49,7 @@ const Help = () => {
           </div>
 
           {/* Getting Started Guide */}
-          <Card className="card-premium mb-8 animate-fade-in">
+          <Card className="bg-white border border-border mb-8 animate-fade-in">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <BookOpen className="h-6 w-6 text-primary" />
@@ -102,7 +102,7 @@ const Help = () => {
 
           {/* Quick Links */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <Card className="card-premium hover-lift">
+            <Card className="bg-white border border-border hover-lift">
               <CardHeader>
                 <Video className="h-8 w-8 text-primary mb-2" />
                 <CardTitle>Video Tutorials</CardTitle>
@@ -112,7 +112,7 @@ const Help = () => {
               </CardContent>
             </Card>
 
-            <Card className="card-premium hover-lift">
+            <Card className="bg-white border border-border hover-lift">
               <CardHeader>
                 <Zap className="h-8 w-8 text-primary mb-2" />
                 <CardTitle>Quick Start</CardTitle>
@@ -122,7 +122,7 @@ const Help = () => {
               </CardContent>
             </Card>
 
-            <Card className="card-premium hover-lift">
+            <Card className="bg-white border border-border hover-lift">
               <CardHeader>
                 <HelpCircle className="h-8 w-8 text-primary mb-2" />
                 <CardTitle>Contact Support</CardTitle>
@@ -144,7 +144,7 @@ const Help = () => {
                 <AccordionItem 
                   key={index} 
                   value={`item-${index}`}
-                  className="card-premium px-6 border-none"
+                  className="bg-white border border-border px-6 border-none"
                 >
                   <AccordionTrigger className="text-left font-semibold hover:text-primary">
                     {faq.question}

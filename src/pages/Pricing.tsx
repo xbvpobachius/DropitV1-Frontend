@@ -230,64 +230,60 @@ const Pricing = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-muted/30">
       <NavbarWithScroll />
 
-      <main className="pt-44 pb-20">
+      <main className="pt-32 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="text-center mb-16 animate-fade-in">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              Simple, Transparent <span className="text-primary">Pricing</span>
+          <div className="text-center mb-14">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Simple, transparent pricing
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground">
               Start with a free trial. No credit card required.
             </p>
           </div>
 
-          {/* Pricing Cards */}
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {plans.map((plan, index) => {
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {plans.map((plan) => {
               const isActive = isCurrentPlan(plan.tier);
 
               return (
                 <div
                   key={plan.name}
-                  className={`relative card-premium rounded-2xl p-8 hover-lift ${
-                    plan.popular && !isActive ? "ring-2 ring-primary glow-primary" : ""
-                  } ${isActive ? "ring-2 ring-green-500 glow-strong" : ""}`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  className={`relative bg-white rounded-xl border p-6 ${
+                    plan.popular && !isActive ? "border-primary ring-2 ring-primary/20" : "border-border"
+                  } ${isActive ? "border-primary/50 ring-2 ring-primary/10" : ""}`}
                 >
                   {plan.popular && !isActive && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <span className="gradient-primary px-4 py-1 rounded-full text-sm font-semibold text-white">
-                        Most Popular
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
+                        Most popular
                       </span>
                     </div>
                   )}
-
                   {isActive && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <span className="bg-gradient-to-r from-green-500 to-green-600 px-4 py-1 rounded-full text-sm font-semibold text-white shadow-lg">
-                        ✓ Current Plan
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span className="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                        Current plan
                       </span>
                     </div>
                   )}
 
                   <div className="mb-6">
-                    <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                    <div className="flex items-baseline mb-2">
-                      <span className="text-5xl font-bold">{plan.price}</span>
-                      <span className="text-muted-foreground ml-2">{plan.period}</span>
+                    <h3 className="text-lg font-semibold text-foreground">{plan.name}</h3>
+                    <div className="flex items-baseline mt-2">
+                      <span className="text-3xl font-bold">{plan.price}</span>
+                      <span className="text-muted-foreground text-sm ml-1">{plan.period}</span>
                     </div>
-                    <p className="text-sm text-primary">{plan.trial}</p>
+                    <p className="text-sm text-primary mt-1">{plan.trial}</p>
                   </div>
 
-                  <ul className="space-y-4 mb-8">
+                  <ul className="space-y-3 mb-6">
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start">
-                        <Check className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
-                        <span className="text-foreground">{feature}</span>
+                      <li key={feature} className="flex items-start gap-2">
+                        <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-foreground">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -295,21 +291,16 @@ const Pricing = () => {
                   <Button
                     onClick={() => handleCheckout(plan.tier)}
                     disabled={loading || isActive}
-                    className={`w-full ${
-                      isActive
-                        ? "bg-green-500/20 text-green-600 border-2 border-green-500 cursor-not-allowed"
-                        : plan.popular
-                          ? "bg-primary hover:bg-primary/90 text-white font-semibold"
-                          : "bg-secondary hover:bg-secondary/80"
-                    }`}
+                    variant={isActive ? "outline" : plan.popular ? "default" : "outline"}
+                    className={`w-full ${isActive ? "cursor-not-allowed opacity-70" : ""}`}
                     size="lg"
                   >
-                    {isActive ? "Active Plan" : loading ? "Loading..." : plan.cta}
+                    {isActive ? "Active plan" : loading ? "Loading..." : plan.cta}
                   </Button>
 
                   {plan.name === "Starter" && !isActive && (
-                    <Button onClick={handleOpenCodeDialog} variant="outline" className="w-full mt-2" size="sm">
-                      Test: Simulate Payment
+                    <Button onClick={handleOpenCodeDialog} variant="ghost" className="w-full mt-2" size="sm">
+                      Test: Simulate payment
                     </Button>
                   )}
                 </div>
@@ -317,10 +308,9 @@ const Pricing = () => {
             })}
           </div>
 
-          {/* FAQ or Additional Info */}
-          <div className="mt-20 text-center">
-            <p className="text-muted-foreground">
-              All plans include our core AI automation features.{" "}
+          <div className="mt-14 text-center">
+            <p className="text-sm text-muted-foreground">
+              All plans include core automation.{" "}
               <Link to="/help" className="text-primary hover:underline">
                 Learn more
               </Link>
@@ -364,7 +354,7 @@ const Pricing = () => {
               <Button variant="outline" onClick={() => setShowCodeDialog(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleValidateCode} className="gradient-primary" disabled={codeSubmitting}>
+              <Button onClick={handleValidateCode} disabled={codeSubmitting}>
                 {codeSubmitting ? "Activating..." : "Validate"}
               </Button>
             </DialogFooter>

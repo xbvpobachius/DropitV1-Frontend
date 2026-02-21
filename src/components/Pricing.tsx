@@ -54,12 +54,7 @@ const plans = [
 
 const Pricing = () => {
   return (
-    <section id="pricing" className="py-24 px-4 bg-background relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-primary rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-primary rounded-full blur-3xl"></div>
-      </div>
+    <section id="pricing" className="py-24 px-4 bg-muted/30 relative overflow-hidden">
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-16 space-y-4">
@@ -75,10 +70,10 @@ const Pricing = () => {
           {plans.map((plan, index) => (
             <div
               key={index}
-              className={`relative rounded-2xl p-8 card-premium transition-all duration-300 hover-lift group ${
+              className={`relative rounded-2xl p-8 bg-white border transition-all duration-300 hover-lift group ${
                 plan.popular
-                  ? "border-2 border-primary glow-primary"
-                  : ""
+                  ? "border-2 border-primary"
+                  : "border-border"
               }`}
             >
               {plan.popular && (
@@ -110,11 +105,8 @@ const Pricing = () => {
               </ul>
 
               <Button
-                className={`w-full rounded-lg py-6 font-semibold transition-all ${
-                  plan.popular
-                    ? "bg-primary hover:bg-primary/90 text-white hover:scale-105 hover:shadow-[0_0_30px_rgba(39,174,96,0.5)]"
-                    : "bg-card hover:bg-card/80 text-foreground border border-primary/20 hover:border-primary/40"
-                }`}
+                variant={plan.popular ? "default" : "outline"}
+                className="w-full rounded-lg py-6 font-semibold"
                 size="lg"
               >
                 {plan.cta}

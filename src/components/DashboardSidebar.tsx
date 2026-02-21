@@ -4,16 +4,14 @@ import { useOnboardingFlow } from "@/hooks/useOnboardingFlow";
 
 const DashboardSidebar = () => {
   const { progress } = useOnboardingFlow();
-
-  // Show onboarding steps only while product/store/YouTube not all done (same logic as DashboardLayout)
   const onboardingDone = Boolean(
     progress?.product_selected && progress?.store_created && progress?.youtube_connected
   );
   const showOnboarding = !onboardingDone;
 
   const onboardingItems = [
-    { icon: Package, label: "Select Product", path: "/dashboard/select-product" },
-    { icon: Store, label: "Create Store", path: "/dashboard/create-store" },
+    { icon: Package, label: "Select product", path: "/dashboard/select-product" },
+    { icon: Store, label: "Create store", path: "/dashboard/create-store" },
     { icon: Youtube, label: "Connect YouTube", path: "/dashboard/connect-youtube" },
   ];
 
@@ -26,22 +24,22 @@ const DashboardSidebar = () => {
   const itemsToShow = showOnboarding ? onboardingItems : completedItems;
 
   return (
-    <aside className="w-64 bg-card border-r border-border min-h-screen pt-24">
-      <nav className="p-4 space-y-2">
+    <aside className="w-56 bg-white border-r border-border min-h-screen pt-20">
+      <nav className="p-4 space-y-1">
         {itemsToShow.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${
+              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-primary/10 text-primary border border-primary/30 glow-primary"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground hover:glow-primary"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }`
             }
           >
-            <item.icon className="w-5 h-5" />
-            <span className="font-medium">{item.label}</span>
+            <item.icon className="w-4 h-4" />
+            {item.label}
           </NavLink>
         ))}
       </nav>

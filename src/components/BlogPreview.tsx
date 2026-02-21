@@ -53,7 +53,7 @@ const BlogPreview = () => {
           {blogPosts.map((post, index) => (
             <article
               key={index}
-              className="group card-premium rounded-2xl overflow-hidden hover-lift cursor-pointer"
+              className="group bg-white border border-border rounded-2xl overflow-hidden hover-lift cursor-pointer"
             >
               {/* Image placeholder */}
               <div className="h-48 bg-gradient-to-br from-primary/10 to-card flex items-center justify-center text-6xl border-b border-primary/10">

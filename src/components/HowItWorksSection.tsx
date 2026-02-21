@@ -2,64 +2,40 @@ import { Package, Wand2, Video, TrendingUp } from "lucide-react";
 
 const HowItWorksSection = () => {
   const steps = [
-    {
-      icon: Package,
-      title: "Select Your Product",
-      description: "Browse curated winning products.",
-    },
-    {
-      icon: Wand2,
-      title: "Generate Your Website",
-      description: "Create your product store automatically.",
-    },
-    {
-      icon: Video,
-      title: "Create and Schedule Videos",
-      description: "Generate product videos and schedule YouTube uploads.",
-    },
-    {
-      icon: TrendingUp,
-      title: "Grow with Organic Traffic",
-      description: "Track performance and scale your YouTube growth.",
-    },
+    { icon: Package, title: "Select product", description: "Choose from curated winning products." },
+    { icon: Wand2, title: "Generate store", description: "Create your product landing page automatically." },
+    { icon: Video, title: "Create & schedule Shorts", description: "Generate videos and schedule YouTube uploads." },
+    { icon: TrendingUp, title: "Grow organically", description: "Track performance and scale your channel." },
   ];
 
   return (
-    <section className="py-24 relative overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute inset-0 gradient-glow opacity-30"></div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            How <span className="text-primary">DropIt</span> Works
+    <section className="py-20 px-4 bg-white">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-14">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+            How it works
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Four simple steps to automate your dropshipping business
+          <p className="text-muted-foreground max-w-xl mx-auto">
+            Four steps to automate your Shorts workflow
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (
               <div
                 key={index}
-                className="relative card-premium p-6 hover-lift animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className="relative bg-white rounded-xl border border-border p-6 hover-lift"
               >
-                <div className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xl border-2 border-primary">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-primary-foreground text-sm font-semibold mb-4">
                   {index + 1}
                 </div>
-                
-                <div className="mb-4 mt-4">
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Icon className="h-6 w-6 text-primary" />
-                  </div>
+                <div className="inline-flex p-2.5 rounded-lg bg-primary/5 border border-primary/10 mb-4">
+                  <Icon className="h-5 w-5 text-primary" />
                 </div>
-                
-                <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-                <p className="text-muted-foreground">{step.description}</p>
+                <h3 className="font-semibold mb-2 text-foreground">{step.title}</h3>
+                <p className="text-sm text-muted-foreground">{step.description}</p>
               </div>
             );
           })}

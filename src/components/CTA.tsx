@@ -1,56 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const CTA = () => {
   return (
-    <section className="py-24 px-4 bg-background relative overflow-hidden">
-      {/* Dynamic background */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
-      </div>
-
-      <div className="max-w-4xl mx-auto relative z-10">
-        <div className="card-premium rounded-3xl p-12 md:p-16 text-center space-y-8 glow-primary">
-          <h2 className="text-4xl md:text-6xl font-bold leading-tight text-foreground">
-            Ready to Automate Your
-            <br />
-            <span className="text-primary drop-shadow-[0_0_30px_rgba(39,174,96,0.5)]">
-              Dropshipping Videos?
-            </span>
+    <section className="py-20 px-4 bg-muted/30">
+      <div className="max-w-3xl mx-auto text-center">
+        <div className="bg-white rounded-2xl border border-border p-10 md:p-14 shadow-sm">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            Ready to automate your Shorts?
           </h2>
-
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Start scaling your YouTube dropshipping business with AI automation today.
+          <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
+            Start your free trial. No credit card required.
           </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button
-              size="lg"
-              className="text-lg px-10 py-7 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold transition-all group hover:scale-105 hover:shadow-[0_0_40px_rgba(39,174,96,0.6)]"
-            >
-              Start Free Trial
-              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+          <Link to="/pricing">
+            <Button size="lg" className="font-semibold">
+              Start free trial
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
-            <p className="text-sm text-muted-foreground">
-              No credit card required • 7-day free trial
-            </p>
-          </div>
-
-          {/* Trust badges */}
-          <div className="flex flex-wrap justify-center gap-8 pt-8 border-t border-border">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-primary">AI</p>
-              <p className="text-sm text-muted-foreground">Video Generation</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-primary">YouTube</p>
-              <p className="text-sm text-muted-foreground">Auto Publishing</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-primary">24/7</p>
-              <p className="text-sm text-muted-foreground">Automation</p>
-            </div>
-          </div>
+          </Link>
+          <p className="text-sm text-muted-foreground mt-6">
+            7-day free trial • Cancel anytime
+          </p>
         </div>
       </div>
     </section>

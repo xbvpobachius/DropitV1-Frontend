@@ -45,7 +45,7 @@ const Products = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-muted/30">
       <NavbarWithScroll />
 
       <main className="pt-32 pb-20">
@@ -65,7 +65,7 @@ const Products = () => {
             {products.map((product, index) => (
               <Card
                 key={product.id}
-                className="card-premium overflow-hidden hover-lift animate-fade-in"
+                className="bg-white border border-border overflow-hidden hover-lift animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="relative h-48 overflow-hidden">

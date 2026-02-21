@@ -299,7 +299,7 @@ const Overview = () => {
 
   return (
     <ProtectedRoute requiredStep="/dashboard/overview">
-      <div className="p-8 pt-32 max-w-7xl mx-auto">
+      <div className="p-8 pt-24 max-w-7xl mx-auto bg-muted/30 min-h-screen">
         <div className="mb-10 flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight mb-1.5">
@@ -312,7 +312,7 @@ const Overview = () => {
 
         {/* Empty state: no content selected */}
         {!selectedProduct && (
-          <Card className="mb-8 overflow-hidden border border-dashed border-border/60 bg-card/30">
+          <Card className="mb-8 overflow-hidden border border-dashed border-border bg-white">
             <div className="p-12 flex flex-col items-center justify-center text-center">
               <div className="w-16 h-16 rounded-2xl bg-muted/80 flex items-center justify-center mb-5">
                 <Package className="w-8 h-8 text-muted-foreground" />
@@ -330,7 +330,7 @@ const Overview = () => {
 
         {/* Active Content Banner */}
         {selectedProduct && (
-        <Card className="mb-8 overflow-hidden border border-border/80 bg-card/50 backdrop-blur-sm transition-all duration-200 hover:border-border">
+        <Card className="mb-8 overflow-hidden border border-border bg-white shadow-sm">
           <div className="flex items-center gap-6 p-6">
             <div className="w-28 h-28 rounded-xl overflow-hidden flex-shrink-0 ring-1 ring-border/50">
               <img src={selectedProduct.image} alt={selectedProduct.name} className="w-full h-full object-cover" />
@@ -456,7 +456,7 @@ const Overview = () => {
 
         {/* Publishing logs */}
         {publishingLogs.length > 0 && (
-          <Card className="mb-8 border border-border/80 bg-card/50">
+          <Card className="mb-8 border border-border bg-white">
             <CardHeader>
               <CardTitle className="text-base font-semibold">Publish history</CardTitle>
               <CardDescription className="text-sm">Recent automated uploads</CardDescription>
@@ -478,7 +478,7 @@ const Overview = () => {
 
         {/* Stats */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">
-          <Card className="p-5 border border-border/80 bg-card/50">
+          <Card className="p-5 border border-border bg-white">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Content</span>
               <Package className="h-4 w-4 text-muted-foreground/60" />
@@ -487,7 +487,7 @@ const Overview = () => {
             <p className="text-xs text-muted-foreground mt-1">In queue</p>
           </Card>
 
-          <Card className="p-5 border border-border/80 bg-card/50">
+          <Card className="p-5 border border-border bg-white">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Shorts</span>
               <Video className="h-4 w-4 text-muted-foreground/60" />
@@ -496,7 +496,7 @@ const Overview = () => {
             <p className="text-xs text-muted-foreground mt-1">This month</p>
           </Card>
 
-          <Card className="p-5 border border-border/80 bg-card/50">
+          <Card className="p-5 border border-border bg-white">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Views</span>
               <TrendingUp className="h-4 w-4 text-muted-foreground/60" />
@@ -505,7 +505,7 @@ const Overview = () => {
             <p className="text-xs text-muted-foreground mt-1">+15% vs last week</p>
           </Card>
 
-          <Card className="p-5 border border-border/80 bg-card/50">
+          <Card className="p-5 border border-border bg-white">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Watch time</span>
               <BarChart3 className="h-4 w-4 text-muted-foreground/60" />
@@ -516,7 +516,7 @@ const Overview = () => {
         </div>
 
         {/* Automation */}
-        <Card className="mb-8 border border-border/80 bg-card/50">
+        <Card className="mb-8 border border-border bg-white">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Youtube className="h-4 w-4 text-muted-foreground" />
@@ -542,7 +542,7 @@ const Overview = () => {
         {/* Main Content Grid */}
         <div className="grid md:grid-cols-2 gap-6">
           {/* Performance */}
-          <Card className="border border-border/80 bg-card/50">
+          <Card className="border border-border bg-white">
             <CardHeader>
               <CardTitle className="text-base font-semibold flex items-center gap-2">
                 <BarChart3 className="h-4 w-4 text-muted-foreground" />
@@ -569,7 +569,7 @@ const Overview = () => {
           </Card>
 
           {/* Recent Activity */}
-          <Card className="border border-border/80 bg-card/50">
+          <Card className="border border-border bg-white">
             <CardHeader>
               <CardTitle className="text-base font-semibold flex items-center gap-2">
                 <Video className="h-4 w-4 text-muted-foreground" />
@@ -604,12 +604,12 @@ const Overview = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-4 mb-6">
-            <Card className="p-5 border border-border/80 bg-card/50">
+            <Card className="p-5 border border-border bg-white">
               <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">This month</div>
               <div className="text-2xl font-semibold tracking-tight">24</div>
               <p className="text-xs text-muted-foreground mt-1">Shorts scheduled</p>
             </Card>
-            <Card className="p-5 border border-border/80 bg-card/50">
+            <Card className="p-5 border border-border bg-white">
               <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Next upload</div>
               <div className="text-2xl font-semibold tracking-tight">
                 {publishingStatus?.preferred_upload_hour_utc != null ? countdown || "—" : "—"}
@@ -618,14 +618,14 @@ const Overview = () => {
                 {scheduledLabel ? `Today at ${scheduledLabel}` : "Set publish time above"}
               </p>
             </Card>
-            <Card className="p-5 border border-border/80 bg-card/50">
+            <Card className="p-5 border border-border bg-white">
               <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">This week</div>
               <div className="text-2xl font-semibold tracking-tight">12.4K</div>
               <p className="text-xs text-muted-foreground mt-1">Views</p>
             </Card>
           </div>
 
-          <Card className="p-6 border border-border/80 bg-card/50">
+          <Card className="p-6 border border-border bg-white">
             <div className="grid grid-cols-7 gap-4">
               {scheduledVideos.slice(0, 28).map((video) => (
                 <Dialog key={video.day}>
@@ -633,8 +633,8 @@ const Overview = () => {
                     <div
                       className={`aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ${
                         video.hasVideo
-                          ? "hover:ring-2 hover:ring-primary/50 hover:ring-offset-2 hover:ring-offset-background"
-                          : "bg-muted/50"
+                          ? "hover:ring-2 hover:ring-primary/50 hover:ring-offset-2 hover:ring-offset-white"
+                          : "bg-muted/80"
                       }`}
                       onMouseEnter={() => setHoveredDay(video.day)}
                       onMouseLeave={() => setHoveredDay(null)}
@@ -663,7 +663,7 @@ const Overview = () => {
                     </div>
                   </DialogTrigger>
                   {video.hasVideo && (
-                    <DialogContent className="bg-card border-border">
+                    <DialogContent className="bg-white border-border">
                       <DialogHeader>
                         <DialogTitle>{video.title}</DialogTitle>
                       </DialogHeader>

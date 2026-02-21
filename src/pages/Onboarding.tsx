@@ -93,9 +93,9 @@ const Onboarding = () => {
   const progressValue = (step / TOTAL_STEPS) * 100;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-muted/30">
       {/* Progress bar */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-sm border-b border-border">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-border">
         <div className="max-w-3xl mx-auto px-6 py-3 flex items-center gap-4">
           <span className="text-xs text-muted-foreground whitespace-nowrap">
             Step {step} of {TOTAL_STEPS}
@@ -174,7 +174,7 @@ const Onboarding = () => {
             </div>
 
             {/* Why Google Cloud card */}
-            <Card className="card-premium p-6 border border-primary/20">
+            <Card className="bg-white border border-border p-6 border border-primary/20">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <Info className="w-5 h-5 text-primary" />
@@ -197,7 +197,7 @@ const Onboarding = () => {
             </Card>
 
             {/* Setup Guide */}
-            <Card className="card-premium overflow-hidden">
+            <Card className="bg-white border border-border overflow-hidden">
               <button
                 onClick={() => setShowGuide(!showGuide)}
                 className="w-full flex items-center justify-between p-6 hover:bg-secondary/50 transition-colors"
@@ -220,7 +220,7 @@ const Onboarding = () => {
             </Card>
 
             {/* Credentials Form */}
-            <Card className="card-premium p-8">
+            <Card className="bg-white border border-border p-8">
               <h3 className="text-xl font-bold mb-6">Enter your credentials</h3>
               <div className="space-y-5">
                 <div className="space-y-2">
@@ -288,7 +288,7 @@ const Onboarding = () => {
             <p className="text-muted-foreground text-lg mb-8 max-w-md">
               Your system is now connected and ready to publish.
             </p>
-            <Card className="card-premium p-6 mb-10 text-left">
+            <Card className="bg-white border border-border p-6 mb-10 text-left">
               <ul className="space-y-3 text-base">
                 <li className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />YouTube connected</li>
                 <li className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />Automatic publishing enabled</li>

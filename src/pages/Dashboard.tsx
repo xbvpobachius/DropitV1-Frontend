@@ -35,7 +35,7 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-muted/30 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading...</p>
@@ -45,7 +45,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-muted/30">
       <NavbarWithScroll />
       
       <main className="pt-40 pb-12">
@@ -60,7 +60,7 @@ const Dashboard = () => {
 
           {/* Quick Stats */}
           <div className="grid md:grid-cols-4 gap-6 mb-8">
-            <Card className="card-premium">
+            <Card className="bg-white border border-border">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Active Products</CardTitle>
                 <Package className="h-4 w-4 text-primary" />
@@ -71,7 +71,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="card-premium">
+            <Card className="bg-white border border-border">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Videos Created</CardTitle>
                 <Video className="h-4 w-4 text-primary" />
@@ -82,7 +82,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="card-premium">
+            <Card className="bg-white border border-border">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Views</CardTitle>
                 <TrendingUp className="h-4 w-4 text-primary" />
@@ -93,7 +93,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="card-premium">
+            <Card className="bg-white border border-border">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Revenue</CardTitle>
                 <BarChart3 className="h-4 w-4 text-primary" />
@@ -108,7 +108,7 @@ const Dashboard = () => {
           {/* Main Content Grid */}
           <div className="grid md:grid-cols-2 gap-6">
             {/* Active Products */}
-            <Card className="card-premium">
+            <Card className="bg-white border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Package className="h-5 w-5 text-primary" />
@@ -128,7 +128,7 @@ const Dashboard = () => {
             </Card>
 
             {/* Video Automation */}
-            <Card className="card-premium">
+            <Card className="bg-white border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Video className="h-5 w-5 text-primary" />
@@ -148,7 +148,7 @@ const Dashboard = () => {
             </Card>
 
             {/* Performance */}
-            <Card className="card-premium">
+            <Card className="bg-white border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BarChart3 className="h-5 w-5 text-primary" />
@@ -164,7 +164,7 @@ const Dashboard = () => {
             </Card>
 
             {/* Settings */}
-            <Card className="card-premium">
+            <Card className="bg-white border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Settings className="h-5 w-5 text-primary" />

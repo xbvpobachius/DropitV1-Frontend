@@ -51,7 +51,7 @@ const HowItWorks = () => {
               key={index}
               className="relative group"
             >
-              <div className="card-premium rounded-2xl p-6 h-full transition-all duration-300 hover-lift">
+              <div className="bg-white border border-border rounded-2xl p-6 h-full transition-all duration-300 hover-lift">
                 {/* Step number with glow */}
                 <div className="w-12 h-12 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-2xl font-bold text-primary mb-4 group-hover:shadow-[0_0_20px_rgba(39,174,96,0.4)] transition-all">
                   {step.number}

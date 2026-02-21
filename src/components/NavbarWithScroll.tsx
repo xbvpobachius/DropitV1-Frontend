@@ -48,19 +48,15 @@ const NavbarWithScroll = () => {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleSignOut = () => {
     if (localStorage.getItem("access_token")) {
       localStorage.removeItem("access_token");
       localStorage.removeItem("user_email");
-      // Netejar subscripció de prova perquè el següent usuari no vegi "Active plan"
       sessionStorage.removeItem("test_subscription");
       const keysToRemove: string[] = [];
       for (let i = 0; i < sessionStorage.length; i++) {
@@ -73,10 +69,7 @@ const NavbarWithScroll = () => {
       supabase.auth.signOut();
       sessionStorage.removeItem("test_subscription");
     }
-    toast({
-      title: "Signed out",
-      description: "You've been successfully signed out.",
-    });
+    toast({ title: "Signed out", description: "You've been successfully signed out." });
     navigate("/");
   };
 
@@ -86,120 +79,92 @@ const NavbarWithScroll = () => {
     { name: "Docs", href: "/help" },
   ];
 
-  return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 px-4 py-4 transition-all duration-300 ${
-      isScrolled ? 'bg-background/95 backdrop-blur-lg border-b border-border/50' : 'bg-transparent'
-    }`}>
-      <div className="max-w-7xl mx-auto">
-        <div className="px-6 py-3 flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex-1">
-            <Link 
-              to="/" 
-              className="text-2xl font-bold text-foreground transition-all duration-300 hover:drop-shadow-[0_0_8px_hsl(var(--primary))] inline-block"
-            >
-              Drop<span className="text-primary">It</span>
-            </Link>
-          </div>
+  const navClass = isScrolled
+    ? "bg-white/95 backdrop-blur-sm border-b border-border shadow-sm"
+    : "bg-transparent";
 
-          {/* Desktop Navigation - Centered */}
-          <div className="hidden md:flex items-center gap-8 flex-1 justify-center">
+  return (
+    <nav className={`fixed top-0 left-0 right-0 z-50 px-4 py-3 transition-all duration-200 ${navClass}`}>
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between h-14">
+          <Link to="/" className="text-xl font-semibold text-foreground">
+            Drop<span className="text-primary">It</span>
+          </Link>
+
+          <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.href}
-                className="text-foreground hover:text-primary transition-colors link-underline font-medium"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 {link.name}
               </Link>
             ))}
           </div>
 
-          {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-4 flex-1 justify-end">
+          <div className="hidden md:flex items-center gap-3">
             {user ? (
               <>
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 border border-primary/20">
-                  <User className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-foreground">{user.email}</span>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/80">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium text-foreground truncate max-w-[140px]">{user.email}</span>
                 </div>
-                <Button 
-                  variant="ghost" 
-                  className="font-medium hover:text-primary"
-                  onClick={handleSignOut}
-                >
+                <Button variant="ghost" size="sm" onClick={handleSignOut}>
                   <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
+                  Sign out
                 </Button>
               </>
             ) : (
               <>
                 <Link to="/auth">
-                  <Button variant="ghost" className="font-medium hover:text-primary">
-                    Sign In
-                  </Button>
+                  <Button variant="ghost" size="sm">Sign in</Button>
                 </Link>
                 <Link to="/auth?mode=signup">
-                  <Button className="bg-primary hover:bg-primary/90 text-white font-semibold glow-primary">
-                    Get Started
-                  </Button>
+                  <Button size="sm">Get started</Button>
                 </Link>
               </>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 hover:bg-card rounded-lg transition-colors"
+            className="md:hidden p-2 rounded-lg hover:bg-muted"
           >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 card-premium rounded-2xl p-6 space-y-4 animate-fade-in">
+          <div className="md:hidden py-4 space-y-2 border-t border-border animate-fade-in">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.href}
-                className="block text-foreground hover:text-primary transition-colors py-2 font-medium"
+                className="block py-2 text-sm font-medium text-foreground hover:text-primary"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {link.name}
               </Link>
             ))}
-            <div className="pt-4 border-t border-border space-y-3">
+            <div className="pt-4 border-t border-border space-y-2">
               {user ? (
                 <>
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 border border-primary/20">
-                    <User className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium text-foreground truncate">{user.email}</span>
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/80 mb-2">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm truncate">{user.email}</span>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    className="w-full font-medium"
-                    onClick={() => {
-                      handleSignOut();
-                      setIsMenuOpen(false);
-                    }}
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
+                  <Button variant="outline" size="sm" className="w-full" onClick={() => { handleSignOut(); setIsMenuOpen(false); }}>
+                    Sign out
                   </Button>
                 </>
               ) : (
                 <>
                   <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full font-medium">
-                      Sign In
-                    </Button>
+                    <Button variant="outline" size="sm" className="w-full">Sign in</Button>
                   </Link>
                   <Link to="/auth?mode=signup" onClick={() => setIsMenuOpen(false)}>
-                    <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold">
-                      Get Started
-                    </Button>
+                    <Button size="sm" className="w-full">Get started</Button>
                   </Link>
                 </>
               )}

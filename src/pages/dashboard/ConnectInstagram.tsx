@@ -99,7 +99,7 @@ const ConnectInstagram = () => {
 
   return (
     <ProtectedRoute requiredStep="/dashboard/connect-youtube">
-      <div className="p-8 pt-32 max-w-3xl mx-auto space-y-8">
+      <div className="p-8 pt-24 max-w-3xl mx-auto space-y-8 bg-muted/30 min-h-screen">
         {/* Header */}
         <div className="text-center">
           <div className="mb-6 flex justify-center">
@@ -114,14 +114,14 @@ const ConnectInstagram = () => {
         </div>
 
         {isConnected ? (
-          <Card className="card-premium p-12 text-center">
+          <Card className="bg-white border border-border p-12 text-center">
             <div className="flex flex-col items-center gap-4">
               <CheckCircle2 className="w-16 h-16 text-primary" />
               <h2 className="text-2xl font-bold">YouTube Channel Connected</h2>
               <p className="text-muted-foreground">Your channel is ready for automated publishing.</p>
               <div className="flex flex-col sm:flex-row gap-3 mt-4">
                 <Button
-                  className="gradient-primary hover:opacity-90 text-lg py-6 px-8 glow-strong"
+                  size="lg"
                   onClick={() => navigate("/dashboard/calendar", { state: { fromPreviousStep: true } })}
                 >
                   Go to Dashboard
@@ -140,7 +140,7 @@ const ConnectInstagram = () => {
         ) : (
           <>
             {/* Info card */}
-            <Card className="card-premium p-6 border border-primary/20">
+            <Card className="bg-white border border-border p-6 border border-primary/20">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <Info className="w-5 h-5 text-primary" />
@@ -160,7 +160,7 @@ const ConnectInstagram = () => {
             </Card>
 
             {/* OAuth Connect Button */}
-            <Card className="card-premium p-8">
+            <Card className="bg-white border border-border p-8">
               <h3 className="text-xl font-bold mb-6">Connect with Google</h3>
               <p className="text-muted-foreground mb-6">
                 Provide your credentials below and click connect. You will be redirected to Google to authorize Dropit.
@@ -189,7 +189,8 @@ const ConnectInstagram = () => {
                 </div>
               </div>
               <Button
-                className="w-full gradient-primary hover:opacity-90 text-lg py-6 glow-strong"
+                className="w-full"
+                size="lg"
                 onClick={handleConnectWithGoogle}
                 disabled={submitting}
               >

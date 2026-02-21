@@ -7,79 +7,63 @@ const features = [
   {
     icon: Video,
     title: "AI Video Generator",
-    description: "Transform raw product footage into viral-style YouTube Shorts automatically. No editing skills required.",
+    description: "Turn product footage into YouTube Shorts. No editing skills required.",
     image: featureVideo,
   },
   {
     icon: Calendar,
     title: "Smart Scheduler",
-    description: "Publish automatically to your YouTube channel at optimal times. Scale your reach effortlessly.",
+    description: "Publish automatically at optimal times. Keep your channel consistent.",
     image: featureCalendar,
   },
   {
     icon: Globe,
     title: "AI Website Builder",
-    description: "Generate beautiful, high-converting landing pages for each product in seconds. Mobile-optimized by default.",
+    description: "Generate landing pages for each product in seconds.",
     image: featureWebsite,
   },
   {
     icon: BarChart3,
-    title: "Analytics Dashboard",
-    description: "Track performance, engagement, and sales metrics in real-time. Make data-driven decisions instantly.",
+    title: "Analytics",
+    description: "Track views, engagement and performance in real time.",
     image: featureVideo,
   },
 ];
 
 const Features = () => {
   return (
-    <section className="py-24 px-4 bg-secondary/30 relative overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-primary/20 rounded-full blur-3xl"></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto relative z-10">
-        <div className="text-center mb-16 space-y-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-            Powerful <span className="text-primary">Features</span>
+    <section id="features" className="py-20 px-4 bg-muted/30">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-14">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+            Built for creators
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Everything you need to dominate organic dropshipping on YouTube
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Everything you need to run your Shorts workflow
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-6">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group relative overflow-hidden rounded-2xl card-premium hover-lift"
+              className="group bg-white rounded-xl border border-border overflow-hidden hover-lift"
             >
-              {/* Feature Image */}
-              <div className="aspect-video overflow-hidden">
-                <img 
-                  src={feature.image} 
+              <div className="aspect-video overflow-hidden bg-muted/50">
+                <img
+                  src={feature.image}
                   alt={feature.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
-
-              {/* Content */}
-              <div className="p-8">
-                <div className="relative z-10">
-                  {/* Icon with glow */}
-                  <div className="inline-flex p-4 rounded-xl bg-primary/10 border border-primary/20 mb-6 group-hover:shadow-[0_0_30px_rgba(39,174,96,0.3)] transition-all">
-                    <feature.icon className="h-8 w-8 text-primary" />
-                  </div>
-
-                  {/* Text */}
-                  <h3 className="text-2xl font-semibold mb-4 text-foreground">{feature.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed text-lg">
-                    {feature.description}
-                  </p>
+              <div className="p-6">
+                <div className="inline-flex p-2.5 rounded-lg bg-primary/5 border border-primary/10 mb-4">
+                  <feature.icon className="h-5 w-5 text-primary" />
                 </div>
-
-                {/* Subtle gradient on hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <h3 className="text-lg font-semibold mb-2 text-foreground">{feature.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {feature.description}
+                </p>
               </div>
             </div>
           ))}

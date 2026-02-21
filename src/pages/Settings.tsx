@@ -90,14 +90,14 @@ const Settings = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-muted/30 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-muted/30">
       <NavbarWithScroll />
       
       <main className="pt-24 pb-12">
@@ -106,7 +106,7 @@ const Settings = () => {
 
           <div className="space-y-6">
             {/* Account Settings */}
-            <Card className="card-premium">
+            <Card className="bg-white border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <User className="h-5 w-5 text-primary" />
@@ -141,7 +141,7 @@ const Settings = () => {
             </Card>
 
             {/* Subscription */}
-            <Card className="card-premium">
+            <Card className="bg-white border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CreditCard className="h-5 w-5 text-primary" />
@@ -163,7 +163,7 @@ const Settings = () => {
             </Card>
 
             {/* Programació de vídeos (hora de pujada diària) */}
-            <Card className="card-premium">
+            <Card className="bg-white border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="h-5 w-5 text-primary" />
@@ -208,7 +208,7 @@ const Settings = () => {
             </Card>
 
             {/* Notifications */}
-            <Card className="card-premium">
+            <Card className="bg-white border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="h-5 w-5 text-primary" />
@@ -235,7 +235,7 @@ const Settings = () => {
             </Card>
 
             {/* Security */}
-            <Card className="card-premium">
+            <Card className="bg-white border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="h-5 w-5 text-primary" />

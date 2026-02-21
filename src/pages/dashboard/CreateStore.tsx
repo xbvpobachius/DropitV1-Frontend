@@ -119,7 +119,7 @@ const CreateStore = () => {
             {storeOptions.map((option, index) => (
               <Card
                 key={option.id}
-                className="card-premium cursor-pointer transition-all duration-500 hover-lift hover:shadow-2xl group overflow-hidden relative animate-fade-in border-2 border-transparent hover:border-primary/20"
+                className="bg-white border border-border cursor-pointer transition-all duration-500 hover-lift hover:shadow-2xl group overflow-hidden relative animate-fade-in border-2 border-transparent hover:border-primary/20"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${option.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
@@ -161,7 +161,7 @@ const CreateStore = () => {
           </div>
 
           {showTutorials && (
-            <Card className="card-premium p-8 animate-fade-in border-2 border-primary/20">
+            <Card className="bg-white border border-border p-8 animate-fade-in border-2 border-primary/20">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
                   <GraduationCap className="w-6 h-6 text-blue-500" />

@@ -120,12 +120,10 @@ const SelectProduct = () => {
 
   return (
     <ProtectedRoute requiredStep="/dashboard/select-product">
-      <div className="p-8 pt-32 max-w-7xl mx-auto relative">
-        {/* Grid Background */}
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,hsl(var(--primary)/0.1)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.1)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+      <div className="p-8 pt-24 max-w-7xl mx-auto bg-muted/30 min-h-screen">
 
         <div className="mb-16 text-center animate-fade-in">
-          <h1 className="text-5xl font-bold mb-4 text-primary">Select your product</h1>
+          <h1 className="text-3xl font-bold mb-4 text-foreground">Select your product</h1>
           <p className="text-muted-foreground text-lg">Choose from the catalog or your products</p>
         </div>
 
@@ -150,7 +148,7 @@ const SelectProduct = () => {
               <div className="mt-16 text-center animate-fade-in">
                 <Button
                   size="lg"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-16 py-7 rounded-xl font-semibold shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:scale-105"
+                  className="font-semibold"
                   onClick={handleContinue}
                   disabled={submitting}
                 >

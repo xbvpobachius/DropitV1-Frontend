@@ -49,8 +49,8 @@ const BillingSuccess = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="card-premium max-w-md w-full">
+    <div className="min-h-screen bg-muted/30 flex items-center justify-center p-4">
+      <Card className="bg-white border border-border max-w-md w-full">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20">
             <CheckCircle2 className="h-10 w-10 text-primary" />
