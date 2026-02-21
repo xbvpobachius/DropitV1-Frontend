@@ -233,61 +233,61 @@ const Pricing = () => {
     <div className="min-h-screen bg-gradient-to-b from-blue-50/80 via-white to-blue-50/60">
       <NavbarWithScroll />
 
-      <main className="pt-36 pb-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4">
+      <main className="pt-28 pb-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
               Simple, transparent <span className="text-primary">pricing</span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base text-muted-foreground max-w-xl mx-auto">
               Start with a free trial. No credit card required.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-4 max-w-5xl mx-auto">
             {plans.map((plan) => {
               const isActive = isCurrentPlan(plan.tier);
 
               return (
                 <div
                   key={plan.name}
-                  className={`relative bg-white rounded-2xl border-2 p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
+                  className={`relative bg-white rounded-xl border-2 p-5 shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 ${
                     plan.popular && !isActive
-                      ? "border-primary shadow-xl scale-[1.02] md:scale-105 ring-2 ring-primary/20"
+                      ? "border-primary shadow-lg ring-2 ring-primary/20"
                       : "border-border"
                   } ${isActive ? "border-primary/60 ring-2 ring-primary/20" : ""}`}
                 >
                   {plan.popular && !isActive && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <span className="bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-semibold shadow-md">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold shadow">
                         Most popular
                       </span>
                     </div>
                   )}
                   {isActive && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <span className="bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-semibold shadow-md">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold shadow">
                         Current plan
                       </span>
                     </div>
                   )}
 
-                  <div className="mb-8 pt-2">
-                    <h3 className="text-2xl font-bold text-foreground">{plan.name}</h3>
-                    <div className="flex items-baseline mt-4">
-                      <span className="text-4xl md:text-5xl font-bold text-foreground">{plan.price}</span>
-                      <span className="text-muted-foreground text-lg ml-2">{plan.period}</span>
+                  <div className="mb-5 pt-1">
+                    <h3 className="text-xl font-bold text-foreground">{plan.name}</h3>
+                    <div className="flex items-baseline mt-2">
+                      <span className="text-2xl md:text-3xl font-bold text-foreground">{plan.price}</span>
+                      <span className="text-muted-foreground text-sm ml-1">{plan.period}</span>
                     </div>
-                    <p className="text-base font-medium text-primary mt-2">{plan.trial}</p>
+                    <p className="text-sm font-medium text-primary mt-1">{plan.trial}</p>
                   </div>
 
-                  <ul className="space-y-4 mb-8">
+                  <ul className="space-y-2.5 mb-5">
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                          <Check className="h-3.5 w-3.5 text-primary" />
+                      <li key={feature} className="flex items-start gap-2">
+                        <div className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                          <Check className="h-3 w-3 text-primary" />
                         </div>
-                        <span className="text-base text-foreground">{feature}</span>
+                        <span className="text-sm text-foreground">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -296,14 +296,14 @@ const Pricing = () => {
                     onClick={() => handleCheckout(plan.tier)}
                     disabled={loading || isActive}
                     variant={isActive ? "outline" : plan.popular ? "default" : "outline"}
-                    className={`w-full py-6 text-base font-semibold ${isActive ? "cursor-not-allowed opacity-70" : ""}`}
+                    className={`w-full py-4 text-sm font-semibold ${isActive ? "cursor-not-allowed opacity-70" : ""}`}
                     size="lg"
                   >
                     {isActive ? "Active plan" : loading ? "Loading..." : plan.cta}
                   </Button>
 
                   {plan.name === "Starter" && !isActive && (
-                    <Button onClick={handleOpenCodeDialog} variant="ghost" className="w-full mt-3" size="sm">
+                    <Button onClick={handleOpenCodeDialog} variant="ghost" className="w-full mt-2" size="sm">
                       Test: Simulate payment
                     </Button>
                   )}
@@ -312,8 +312,8 @@ const Pricing = () => {
             })}
           </div>
 
-          <div className="mt-16 text-center">
-            <p className="text-base text-muted-foreground">
+          <div className="mt-10 text-center">
+            <p className="text-sm text-muted-foreground">
               All plans include core automation.{" "}
               <Link to="/help" className="text-primary hover:underline font-medium">
                 Learn more

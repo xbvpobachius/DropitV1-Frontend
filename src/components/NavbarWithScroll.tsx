@@ -92,9 +92,9 @@ const NavbarWithScroll = () => {
           Drop<span className="text-primary">It</span>
         </Link>
 
-        {/* Nav links - absolutely centered */}
+        {/* Nav links - centered, només quan l'usuari està connectat */}
         <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-10">
-          {navLinks.map((link) => (
+          {user && navLinks.map((link) => (
             <Link
               key={link.name}
               to={link.href}
@@ -140,7 +140,7 @@ const NavbarWithScroll = () => {
 
         {isMenuOpen && (
           <div className="md:hidden py-4 space-y-2 border-t border-border animate-fade-in">
-            {navLinks.map((link) => (
+            {user && navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.href}
@@ -174,7 +174,6 @@ const NavbarWithScroll = () => {
             </div>
           </div>
         )}
-      </div>
     </nav>
   );
 };
