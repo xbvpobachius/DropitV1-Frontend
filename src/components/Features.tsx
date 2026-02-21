@@ -32,7 +32,7 @@ const features = [
 
 const Features = () => {
   return (
-    <section id="features" className="py-20 px-4 bg-muted/30">
+    <section id="features" className="py-20 px-4 bg-gradient-to-b from-blue-50/40 to-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
@@ -47,7 +47,7 @@ const Features = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group bg-white rounded-xl border border-border overflow-hidden hover-lift"
+              className="group bg-white rounded-xl border-2 border-border overflow-hidden hover-lift hover:border-primary/30"
             >
               <div className="aspect-video overflow-hidden bg-muted/50">
                 <img
@@ -57,7 +57,7 @@ const Features = () => {
                 />
               </div>
               <div className="p-6">
-                <div className="inline-flex p-2.5 rounded-lg bg-primary/5 border border-primary/10 mb-4">
+                <div className="inline-flex p-3 rounded-xl bg-primary/10 border border-primary/20 mb-4">
                   <feature.icon className="h-5 w-5 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2 text-foreground">{feature.title}</h3>

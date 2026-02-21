@@ -87,7 +87,7 @@ const NavbarWithScroll = () => {
     <nav className={`fixed top-0 left-0 right-0 z-50 px-4 py-3 transition-all duration-200 ${navClass}`}>
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between h-14">
-          <Link to="/" className="text-xl font-semibold text-foreground">
+          <Link to="/" className="text-xl font-bold text-foreground hover:text-primary transition-colors">
             Drop<span className="text-primary">It</span>
           </Link>
 

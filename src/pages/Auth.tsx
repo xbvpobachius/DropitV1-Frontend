@@ -72,7 +72,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-muted/30">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-blue-50/40">
       <div className="w-full max-w-md">
         <Link
           to="/"

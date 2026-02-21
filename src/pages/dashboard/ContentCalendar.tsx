@@ -252,7 +252,7 @@ const ContentCalendar = () => {
 
   return (
     <ProtectedRoute requiredStep="/dashboard/calendar">
-      <div className="p-8 pt-24 max-w-7xl mx-auto bg-muted/30 min-h-screen">
+      <div className="p-8 pt-24 max-w-7xl mx-auto bg-blue-50/30 min-h-screen">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Content Calendar</h1>
           <p className="text-muted-foreground">Manage your automated video schedule</p>

@@ -26,12 +26,12 @@ const HowItWorksSection = () => {
             return (
               <div
                 key={index}
-                className="relative bg-white rounded-xl border border-border p-6 hover-lift"
+                className="relative bg-white rounded-xl border-2 border-border p-6 hover-lift hover:border-primary/30"
               >
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-primary-foreground text-sm font-semibold mb-4">
+                <div className="flex items-center justify-center w-11 h-11 rounded-full bg-primary text-primary-foreground text-sm font-bold mb-4 shadow-md">
                   {index + 1}
                 </div>
-                <div className="inline-flex p-2.5 rounded-lg bg-primary/5 border border-primary/10 mb-4">
+                <div className="inline-flex p-3 rounded-xl bg-primary/10 border border-primary/20 mb-4">
                   <Icon className="h-5 w-5 text-primary" />
                 </div>
                 <h3 className="font-semibold mb-2 text-foreground">{step.title}</h3>

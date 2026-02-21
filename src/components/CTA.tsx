@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 
 const CTA = () => {
   return (
-    <section className="py-20 px-4 bg-muted/30">
+    <section className="py-20 px-4 bg-gradient-to-b from-blue-50/50 to-blue-50/30">
       <div className="max-w-3xl mx-auto text-center">
-        <div className="bg-white rounded-2xl border border-border p-10 md:p-14 shadow-sm">
+        <div className="bg-white rounded-2xl border-2 border-primary/20 p-10 md:p-14 shadow-lg">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Ready to automate your Shorts?
           </h2>

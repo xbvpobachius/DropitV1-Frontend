@@ -120,7 +120,7 @@ const SelectProduct = () => {
 
   return (
     <ProtectedRoute requiredStep="/dashboard/select-product">
-      <div className="p-8 pt-24 max-w-7xl mx-auto bg-muted/30 min-h-screen">
+      <div className="p-8 pt-24 max-w-7xl mx-auto bg-blue-50/30 min-h-screen">
 
         <div className="mb-16 text-center animate-fade-in">
           <h1 className="text-3xl font-bold mb-4 text-foreground">Select your product</h1>

@@ -54,7 +54,7 @@ const DashboardLayout = () => {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen bg-blue-50/30">
       <NavbarWithScroll />
       <div className="flex w-full">
         {showSidebar && <DashboardSidebar />}

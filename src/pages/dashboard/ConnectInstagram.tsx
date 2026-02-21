@@ -99,7 +99,7 @@ const ConnectInstagram = () => {
 
   return (
     <ProtectedRoute requiredStep="/dashboard/connect-youtube">
-      <div className="p-8 pt-24 max-w-3xl mx-auto space-y-8 bg-muted/30 min-h-screen">
+      <div className="p-8 pt-24 max-w-3xl mx-auto space-y-8 bg-blue-50/30 min-h-screen">
         {/* Header */}
         <div className="text-center">
           <div className="mb-6 flex justify-center">

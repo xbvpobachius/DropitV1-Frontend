@@ -299,7 +299,7 @@ const Overview = () => {
 
   return (
     <ProtectedRoute requiredStep="/dashboard/overview">
-      <div className="p-8 pt-24 max-w-7xl mx-auto bg-muted/30 min-h-screen">
+      <div className="p-8 pt-24 max-w-7xl mx-auto bg-blue-50/30 min-h-screen">
         <div className="mb-10 flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight mb-1.5">
