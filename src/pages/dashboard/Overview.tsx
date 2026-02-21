@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { BarChart3, Video, Package, TrendingUp, Calendar as CalendarIcon, Eye, Trash2, AlertTriangle, CheckCircle2, Youtube } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ApiStatusIndicator } from "@/components/ApiStatusIndicator";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { apiFetch } from "@/lib/api";
@@ -102,10 +102,10 @@ const useReconnectCountdown = (connectedAtIso: string | null | undefined) => {
       const now = Date.now();
       const diff = expiresAtMs - now;
       if (diff <= 0) {
-        setLabel("Mandatory reconnect now");
+        setLabel("Reconnect required");
         return;
       }
-      setLabel(`Mandatory reconnect in ${formatDurationShort(diff)}`);
+      setLabel(`Reconnect in ${formatDurationShort(diff)}`);
     };
 
     update();
@@ -265,14 +265,14 @@ const Overview = () => {
 
       if (error) {
         console.error("Error resetting progress:", error);
-        toast({ title: "Error", description: "Could not remove product", variant: "destructive" });
+        toast({ title: "Error", description: "Could not remove content", variant: "destructive" });
         return;
       }
-      toast({ title: "Product Removed", description: "Your progress has been reset. Starting over..." });
+      toast({ title: "Removed from queue", description: "You can add new content in the Content Calendar." });
       setTimeout(() => { navigate("/dashboard/select-product"); }, 1000);
     } catch (error) {
-      console.error("Error removing product:", error);
-      toast({ title: "Error", description: "Something went wrong", variant: "destructive" });
+        console.error("Error removing content:", error);
+      toast({ title: "Error", description: "Something went wrong.", variant: "destructive" });
     } finally {
       setIsRemoving(false);
     }
@@ -283,7 +283,7 @@ const Overview = () => {
     hasVideo: i % 3 !== 0,
     time: "18:00",
     thumbnail: `https://images.unsplash.com/photo-${1500000000000 + i * 100000}?w=200`,
-    title: `Product Showcase ${i + 1}`,
+    title: `Short #${i + 1}`,
   }));
 
   const getDayName = (day: number) => {
@@ -291,12 +291,10 @@ const Overview = () => {
     return days[day % 7];
   };
 
-  const selectedProduct = {
+  // TODO: wire to real API – null = empty state
+  const selectedProduct: { name: string; image: string } | null = {
     name: "Wireless Earbuds Pro",
     image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400",
-    purchasePrice: 12.99,
-    sellingPrice: 49.99,
-    profit: 285,
   };
 
   return (
@@ -312,16 +310,34 @@ const Overview = () => {
           <ApiStatusIndicator />
         </div>
 
+        {/* Empty state: no content selected */}
+        {!selectedProduct && (
+          <Card className="mb-8 overflow-hidden border border-dashed border-border/60 bg-card/30">
+            <div className="p-12 flex flex-col items-center justify-center text-center">
+              <div className="w-16 h-16 rounded-2xl bg-muted/80 flex items-center justify-center mb-5">
+                <Package className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <h2 className="text-lg font-semibold mb-1.5">No content in queue</h2>
+              <p className="text-muted-foreground text-sm max-w-sm mb-6 leading-relaxed">
+                Choose a product in Content Calendar to start publishing Shorts to your YouTube channel.
+              </p>
+              <Button asChild variant="default">
+                <Link to="/dashboard/calendar">Open Content Calendar</Link>
+              </Button>
+            </div>
+          </Card>
+        )}
+
         {/* Active Content Banner */}
+        {selectedProduct && (
         <Card className="mb-8 overflow-hidden border border-border/80 bg-card/50 backdrop-blur-sm transition-all duration-200 hover:border-border">
           <div className="flex items-center gap-6 p-6">
             <div className="w-28 h-28 rounded-xl overflow-hidden flex-shrink-0 ring-1 ring-border/50">
               <img src={selectedProduct.image} alt={selectedProduct.name} className="w-full h-full object-cover" />
             </div>
             <div className="flex-1 min-w-0">
-              <Badge variant="secondary" className="mb-2 text-xs font-medium">Active Content</Badge>
+              <Badge variant="secondary" className="mb-2 text-xs font-medium">Publishing</Badge>
               <h2 className="text-2xl font-semibold mb-1">{selectedProduct.name}</h2>
-              {/* Connected Channel Info */}
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 text-sm text-muted-foreground">
                 <span>
                   Channel:{" "}
@@ -402,20 +418,6 @@ const Overview = () => {
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-6 text-sm">
-                <div>
-                  <div className="text-muted-foreground">Cost</div>
-                  <div className="text-lg font-semibold">${selectedProduct.purchasePrice.toFixed(2)}</div>
-                </div>
-                <div className="text-muted-foreground/60">→</div>
-                <div>
-                  <div className="text-muted-foreground">Selling Price</div>
-                  <div className="text-lg font-semibold text-primary">${selectedProduct.sellingPrice.toFixed(2)}</div>
-                </div>
-                <div className="ml-auto">
-                  <Badge variant="secondary" className="font-medium">+{selectedProduct.profit}% margin</Badge>
-                </div>
-              </div>
             </div>
             <div className="flex-shrink-0">
               <AlertDialog>
@@ -431,19 +433,18 @@ const Overview = () => {
                       <div className="w-12 h-12 rounded-full bg-destructive/20 flex items-center justify-center">
                         <AlertTriangle className="w-6 h-6 text-destructive" />
                       </div>
-                      <AlertDialogTitle className="text-2xl">Remove Product?</AlertDialogTitle>
+                      <AlertDialogTitle className="text-xl font-semibold">Remove from queue?</AlertDialogTitle>
                     </div>
-                    <AlertDialogDescription className="text-base leading-relaxed">
-                      This will remove <strong>{selectedProduct.name}</strong> and reset all your progress.
-                      You'll need to start over by selecting a new product and going through the setup process again.
+                    <AlertDialogDescription className="text-sm leading-relaxed text-muted-foreground">
+                      This will remove <strong>{selectedProduct.name}</strong> from your publishing queue and reset setup. You can add new content anytime in the Content Calendar.
                       <br /><br />
-                      <span className="text-destructive font-semibold">This action cannot be undone.</span>
+                      <span className="text-destructive/90 font-medium">This cannot be undone.</span>
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleRemoveProduct} disabled={isRemoving} className="bg-destructive hover:bg-destructive/90 text-white">
-                      {isRemoving ? "Removing..." : "Yes, Remove Product"}
+                      {isRemoving ? "Removing…" : "Remove"}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -451,13 +452,14 @@ const Overview = () => {
             </div>
           </div>
         </Card>
+        )}
 
-        {/* Publishing logs (minimal) */}
+        {/* Publishing logs */}
         {publishingLogs.length > 0 && (
           <Card className="mb-8 border border-border/80 bg-card/50">
             <CardHeader>
-              <CardTitle className="text-lg">Recent publishing logs</CardTitle>
-              <CardDescription>Latest automatic publication attempts</CardDescription>
+              <CardTitle className="text-base font-semibold">Publish history</CardTitle>
+              <CardDescription className="text-sm">Recent automated uploads</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               {publishingLogs.slice(0, 5).map((l) => (
@@ -474,20 +476,20 @@ const Overview = () => {
           </Card>
         )}
 
-        {/* Quick Stats */}
+        {/* Stats */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">
           <Card className="p-5 border border-border/80 bg-card/50">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Products</span>
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Content</span>
               <Package className="h-4 w-4 text-muted-foreground/60" />
             </div>
             <div className="text-2xl font-semibold tracking-tight">1</div>
-            <p className="text-xs text-muted-foreground mt-1">Active</p>
+            <p className="text-xs text-muted-foreground mt-1">In queue</p>
           </Card>
 
           <Card className="p-5 border border-border/80 bg-card/50">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Videos</span>
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Shorts</span>
               <Video className="h-4 w-4 text-muted-foreground/60" />
             </div>
             <div className="text-2xl font-semibold tracking-tight">24</div>
@@ -505,15 +507,15 @@ const Overview = () => {
 
           <Card className="p-5 border border-border/80 bg-card/50">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Revenue</span>
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Watch time</span>
               <BarChart3 className="h-4 w-4 text-muted-foreground/60" />
             </div>
-            <div className="text-2xl font-semibold tracking-tight">$2,847</div>
-            <p className="text-xs text-muted-foreground mt-1">All time</p>
+            <div className="text-2xl font-semibold tracking-tight">42h</div>
+            <p className="text-xs text-muted-foreground mt-1">Total</p>
           </Card>
         </div>
 
-        {/* Automation Status */}
+        {/* Automation */}
         <Card className="mb-8 border border-border/80 bg-card/50">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -524,7 +526,8 @@ const Overview = () => {
           <CardContent>
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
               <span className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> YouTube connected
+                <span className={`w-1.5 h-1.5 rounded-full ${publishingStatus?.needs_reconnect ? "bg-amber-500" : "bg-emerald-500"}`} />
+                {publishingStatus?.needs_reconnect ? "YouTube reconnect required" : "YouTube connected"}
               </span>
               <span className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Auto publishing
@@ -545,21 +548,21 @@ const Overview = () => {
                 <BarChart3 className="h-4 w-4 text-muted-foreground" />
                 Performance
               </CardTitle>
-              <CardDescription className="text-sm">Channel engagement</CardDescription>
+              <CardDescription className="text-sm">Shorts performance</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Avg. View Duration</span>
-                  <span className="text-sm font-bold text-primary">1m 42s</span>
+                  <span className="text-sm text-muted-foreground">Avg. watch time</span>
+                  <span className="text-sm font-semibold">1m 42s</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">CTR</span>
-                  <span className="text-sm font-bold">4.8%</span>
+                  <span className="text-sm font-semibold">4.8%</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Subscriber Growth</span>
-                  <span className="text-sm font-bold text-primary">+127</span>
+                  <span className="text-sm text-muted-foreground">New subscribers</span>
+                  <span className="text-sm font-semibold text-primary">+127</span>
                 </div>
               </div>
             </CardContent>
@@ -572,32 +575,32 @@ const Overview = () => {
                 <Video className="h-4 w-4 text-muted-foreground" />
                 Recent Shorts
               </CardTitle>
-              <CardDescription className="text-sm">Latest content performance</CardDescription>
+              <CardDescription className="text-sm">Most recent uploads</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Product Showcase #24</span>
-                  <span className="text-sm text-primary">1.2K views</span>
+                  <span className="text-sm text-foreground/90">Short #24</span>
+                  <span className="text-sm font-medium text-primary">1.2K views</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Product Showcase #23</span>
-                  <span className="text-sm text-primary">980 views</span>
+                  <span className="text-sm text-foreground/90">Short #23</span>
+                  <span className="text-sm font-medium text-primary">980 views</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Product Showcase #22</span>
-                  <span className="text-sm text-primary">1.5K views</span>
+                  <span className="text-sm text-foreground/90">Short #22</span>
+                  <span className="text-sm font-medium text-primary">1.5K views</span>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Calendar Section */}
+        {/* Calendar */}
         <div className="mt-16">
           <div className="mb-6">
             <h2 className="text-xl font-semibold tracking-tight mb-1">Content calendar</h2>
-            <p className="text-muted-foreground text-sm">Scheduled Shorts</p>
+            <p className="text-muted-foreground text-sm">Your scheduled Shorts for the next 4 weeks</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-4 mb-6">
@@ -671,18 +674,18 @@ const Overview = () => {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <CalendarIcon className="w-4 h-4" />
-                            <span>Scheduled for Day {video.day} at {video.time}</span>
+                            <span>Day {video.day} · {video.time} UTC</span>
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <Button variant="outline" className="flex-1">
+                          <Button variant="outline" size="sm" className="flex-1">
                             <Eye className="w-4 h-4 mr-2" /> Preview
                           </Button>
-                          <Button variant="outline" className="flex-1">
+                          <Button variant="outline" size="sm" className="flex-1">
                             <CalendarIcon className="w-4 h-4 mr-2" /> Reschedule
                           </Button>
-                          <Button variant="destructive" className="flex-1">
-                            <Trash2 className="w-4 h-4 mr-2" /> Delete
+                          <Button variant="ghost" size="sm" className="flex-1 text-muted-foreground hover:text-destructive">
+                            <Trash2 className="w-4 h-4 mr-2" /> Remove
                           </Button>
                         </div>
                       </div>
