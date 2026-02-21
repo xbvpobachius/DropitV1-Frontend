@@ -1,709 +1,194 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { BarChart3, Video, Package, TrendingUp, Calendar as CalendarIcon, Eye, Trash2, AlertTriangle, CheckCircle2, Youtube } from "lucide-react";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { ApiStatusIndicator } from "@/components/ApiStatusIndicator";
-import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { apiFetch } from "@/lib/api";
+import { motion } from "framer-motion";
+import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  CalendarClock,
+  CheckCircle2,
+  Clock,
+  TrendingUp,
+  ArrowUpRight,
+  Play,
+  Sparkles,
+} from "lucide-react";
 
-const useCountdown = (preferredHourUtc: number | null) => {
-  const [timeLeft, setTimeLeft] = useState("");
-  const [scheduledLabel, setScheduledLabel] = useState<string>("");
+const viewsData = [
+  { day: "Mon", views: 4200 },
+  { day: "Tue", views: 6800 },
+  { day: "Wed", views: 5100 },
+  { day: "Thu", views: 9400 },
+  { day: "Fri", views: 7200 },
+  { day: "Sat", views: 11800 },
+  { day: "Sun", views: 8900 },
+];
 
-  useEffect(() => {
-    if (preferredHourUtc == null) {
-      setTimeLeft("");
-      setScheduledLabel("");
-      return;
-    }
-    const getTarget = () => {
-      const now = new Date();
-      const target = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), preferredHourUtc, 0, 0, 0));
-      if (now >= target) {
-        target.setUTCDate(target.getUTCDate() + 1);
-      }
-      return target;
-    };
+const stats = [
+  { label: "Scheduled", value: "24", icon: CalendarClock, change: "+3 today", color: "text-primary", bgGlow: "from-primary/10 to-primary/5" },
+  { label: "Published", value: "142", icon: CheckCircle2, change: "+8 this week", color: "text-success", bgGlow: "from-success/10 to-success/5" },
+  { label: "Next Upload", value: "2h 15m", icon: Clock, change: "Today at 3 PM", color: "text-blue-400", bgGlow: "from-blue-400/10 to-blue-400/5" },
+  { label: "Avg. Views", value: "12.4K", icon: TrendingUp, change: "+18%", color: "text-sky-400", bgGlow: "from-sky-400/10 to-sky-400/5" },
+];
 
-    const update = () => {
-      const now = new Date();
-      const target = getTarget();
-      const diff = target.getTime() - now.getTime();
-      if (diff <= 0) {
-        setTimeLeft("");
-        setScheduledLabel("");
-        return;
-      }
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      setTimeLeft(`${hours}h ${minutes.toString().padStart(2, "0")}m`);
-      setScheduledLabel(`${String(preferredHourUtc).padStart(2, "0")}:00 UTC`);
-    };
-
-    update();
-    const interval = setInterval(update, 60000);
-    return () => clearInterval(interval);
-  }, [preferredHourUtc]);
-
-  return { timeLeft, scheduledLabel };
-};
-
-const RECONNECT_TTL_DAYS = 7;
-
-function formatDurationShort(ms: number): string {
-  const totalMinutes = Math.max(0, Math.floor(ms / (1000 * 60)));
-  const days = Math.floor(totalMinutes / (60 * 24));
-  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
-  const minutes = totalMinutes % 60;
-  if (days > 0) return `${days}d ${String(hours).padStart(2, "0")}h`;
-  if (hours > 0) return `${hours}h ${String(minutes).padStart(2, "0")}m`;
-  return `${minutes}m`;
-}
-
-const useReconnectCountdown = (connectedAtIso: string | null | undefined) => {
-  const [label, setLabel] = useState<string>("");
-
-  useEffect(() => {
-    if (!connectedAtIso) {
-      setLabel("");
-      return;
-    }
-    const connectedAtMs = Date.parse(connectedAtIso);
-    if (Number.isNaN(connectedAtMs)) {
-      setLabel("");
-      return;
-    }
-    const expiresAtMs = connectedAtMs + RECONNECT_TTL_DAYS * 24 * 60 * 60 * 1000;
-
-    const update = () => {
-      const now = Date.now();
-      const diff = expiresAtMs - now;
-      if (diff <= 0) {
-        setLabel("Reconnect required");
-        return;
-      }
-      setLabel(`Reconnect in ${formatDurationShort(diff)}`);
-    };
-
-    update();
-    const interval = setInterval(update, 60000);
-    return () => clearInterval(interval);
-  }, [connectedAtIso]);
-
-  return label;
-};
+const recentActivity = [
+  { title: "Morning Routine Tips #47", status: "Published", time: "2h ago", views: "8.2K" },
+  { title: "Quick Recipe: 60s Pasta", status: "Published", time: "5h ago", views: "15.1K" },
+  { title: "Fitness Hack #12", status: "Scheduled", time: "In 2 hours", views: "—" },
+  { title: "Productivity Setup Tour", status: "Scheduled", time: "Tomorrow 9 AM", views: "—" },
+  { title: "Behind The Scenes #8", status: "Draft", time: "Created yesterday", views: "—" },
+];
 
 const Overview = () => {
-  const [hoveredDay, setHoveredDay] = useState<number | null>(null);
-  const [isRemoving, setIsRemoving] = useState(false);
-  const [publishingStatus, setPublishingStatus] = useState<{
-    youtube_channel_title?: string | null;
-    youtube_channel_status?: string | null;
-    youtube_connected_at?: string | null;
-    needs_reconnect: boolean;
-    published_today: number;
-    daily_video_limit: number;
-    preferred_upload_hour_utc?: number | null;
-  } | null>(null);
-  const [publishingLogs, setPublishingLogs] = useState<Array<{
-    id: string;
-    video_filename: string;
-    status: string;
-    published_at: string;
-    error_message?: string | null;
-  }>>([]);
-  const [reconnecting, setReconnecting] = useState(false);
-  const [savingHour, setSavingHour] = useState(false);
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const { timeLeft: countdown, scheduledLabel } = useCountdown(publishingStatus?.preferred_upload_hour_utc ?? null);
-  const reconnectCountdown = useReconnectCountdown(publishingStatus?.youtube_connected_at);
-
-  useEffect(() => {
-    const loadPublishing = async () => {
-      if (!localStorage.getItem("access_token")) return;
-
-      try {
-        const status = await apiFetch<{
-          youtube_channel_title?: string | null;
-          youtube_channel_status?: string | null;
-          youtube_connected_at?: string | null;
-          needs_reconnect: boolean;
-          published_today: number;
-          daily_video_limit: number;
-          preferred_upload_hour_utc?: number | null;
-        }>("/publishing/status");
-        setPublishingStatus(status);
-      } catch {
-        setPublishingStatus(null);
-      }
-
-      try {
-        const logs = await apiFetch<Array<{
-          id: string;
-          video_filename: string;
-          status: string;
-          published_at: string;
-          error_message?: string | null;
-        }>>("/publishing/logs?limit=10");
-        setPublishingLogs(logs || []);
-
-        const lastFailed = (logs || []).find((l) => l.status === "failed");
-        if (lastFailed?.published_at) {
-          const ts = Date.parse(lastFailed.published_at);
-          const key = "dropit_last_failed_pub_ts";
-          const seen = Number(sessionStorage.getItem(key) || "0");
-          if (!Number.isNaN(ts) && ts > seen) {
-            sessionStorage.setItem(key, String(ts));
-            toast({
-              title: "Upload failed",
-              description: lastFailed.error_message || "A scheduled upload failed. Please check your connection.",
-              variant: "destructive",
-            });
-          }
-        }
-      } catch {
-        setPublishingLogs([]);
-      }
-    };
-
-    loadPublishing();
-  }, [toast]);
-
-  const handleUploadHourChange = async (hourUtc: string) => {
-    const value = hourUtc === "none" ? null : parseInt(hourUtc, 10);
-    setSavingHour(true);
-    try {
-      const updated = await apiFetch<{
-        preferred_upload_hour_utc?: number | null;
-        published_today: number;
-        daily_video_limit: number;
-        needs_reconnect: boolean;
-        youtube_channel_title?: string | null;
-        youtube_channel_status?: string | null;
-      }>("/publishing/settings", {
-        method: "PATCH",
-        body: JSON.stringify({ preferred_upload_hour_utc: value }),
-      });
-      setPublishingStatus((prev) => (prev ? { ...prev, preferred_upload_hour_utc: updated.preferred_upload_hour_utc ?? null } : null));
-      toast({
-        title: "Time saved",
-        description: value != null
-          ? `Shorts will publish daily at ${String(value).padStart(2, "0")}:00 UTC.`
-          : "Publish time cleared.",
-      });
-    } catch (e) {
-      toast({
-        title: "Error",
-        description: e instanceof Error ? e.message : "Could not save publish time",
-        variant: "destructive",
-      });
-    } finally {
-      setSavingHour(false);
-    }
-  };
-
-  const handleReconnect = async () => {
-    setReconnecting(true);
-    try {
-      const data = await apiFetch<{ auth_url: string }>("/auth/youtube/login");
-      if (data.auth_url) {
-        window.location.href = data.auth_url;
-        return;
-      }
-      throw new Error("No auth URL returned");
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Could not reconnect";
-      toast({ title: "Error", description: message, variant: "destructive" });
-      setReconnecting(false);
-    }
-  };
-
-  const handleRemoveProduct = async () => {
-    setIsRemoving(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast({ title: "Error", description: "Could not authenticate", variant: "destructive" });
-        return;
-      }
-      const { error } = await supabase
-        .from("user_progress")
-        .update({
-          product_selected: false,
-          store_created: false,
-          instagram_connected: false,
-          calendar_viewed: false,
-          products_created: 0,
-          stores_created: 0,
-          onboarding_completed: false,
-        })
-        .eq("user_id", session.user.id);
-
-      if (error) {
-        console.error("Error resetting progress:", error);
-        toast({ title: "Error", description: "Could not remove content", variant: "destructive" });
-        return;
-      }
-      toast({ title: "Removed from queue", description: "You can add new content in the Content Calendar." });
-      setTimeout(() => { navigate("/dashboard/connect-youtube"); }, 1000);
-    } catch (error) {
-        console.error("Error removing content:", error);
-      toast({ title: "Error", description: "Something went wrong.", variant: "destructive" });
-    } finally {
-      setIsRemoving(false);
-    }
-  };
-
-  const scheduledVideos = Array.from({ length: 30 }, (_, i) => ({
-    day: i + 1,
-    hasVideo: i % 3 !== 0,
-    time: "18:00",
-    thumbnail: `https://images.unsplash.com/photo-${1500000000000 + i * 100000}?w=200`,
-    title: `Short #${i + 1}`,
-  }));
-
-  const getDayName = (day: number) => {
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    return days[day % 7];
-  };
-
-  // TODO: wire to real API – null = empty state
-  const selectedProduct: { name: string; image: string } | null = {
-    name: "Wireless Earbuds Pro",
-    image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400",
-  };
-
   return (
-    <ProtectedRoute requiredStep="/dashboard/overview">
-      <div>
-        <div className="mb-10 flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2.5 mb-1">
-              <h1 className="font-display text-3xl font-bold">Dashboard</h1>
-              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${publishingStatus?.needs_reconnect ? "bg-amber-500/10 border-amber-500/20" : "bg-success/10 border-success/20"}`}>
-                <div className={`w-1.5 h-1.5 rounded-full ${publishingStatus?.needs_reconnect ? "bg-amber-500 animate-pulse" : "bg-success animate-pulse"}`} />
-                <span className={`text-[10px] font-medium ${publishingStatus?.needs_reconnect ? "text-amber-600" : "text-success"}`}>
-                  {publishingStatus?.needs_reconnect ? "Reconnect required" : "All systems online"}
-                </span>
-              </div>
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      <div className="mb-10 flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2.5 mb-1">
+            <h1 className="font-display text-3xl font-bold">Dashboard</h1>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 border border-success/20">
+              <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+              <span className="text-[10px] font-medium text-success">All systems online</span>
             </div>
-            <p className="text-sm text-muted-foreground">Content workflow and publishing status</p>
           </div>
-          <ApiStatusIndicator />
+          <p className="text-sm text-muted-foreground">Welcome back. Here&apos;s your Shorts overview.</p>
         </div>
-
-        {/* Empty state: no content selected */}
-        {!selectedProduct && (
-          <Card className="mb-8 overflow-hidden border border-dashed border-border rounded-2xl">
-            <div className="p-12 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 rounded-2xl bg-muted/80 flex items-center justify-center mb-5">
-                <Package className="w-8 h-8 text-muted-foreground" />
-              </div>
-              <h2 className="text-lg font-semibold mb-1.5">No content in queue</h2>
-              <p className="text-muted-foreground text-sm max-w-sm mb-6 leading-relaxed">
-                Choose a product in Content Calendar to start publishing Shorts to your YouTube channel.
-              </p>
-              <Button asChild variant="default">
-                <Link to="/dashboard/calendar">Open Content Calendar</Link>
-              </Button>
-            </div>
-          </Card>
-        )}
-
-        {/* Active Content Banner */}
-        {selectedProduct && (
-        <Card className="mb-8 overflow-hidden border border-border rounded-2xl shadow-sm">
-          <div className="flex items-center gap-6 p-6">
-            <div className="w-28 h-28 rounded-xl overflow-hidden flex-shrink-0 ring-1 ring-border/50">
-              <img src={selectedProduct.image} alt={selectedProduct.name} className="w-full h-full object-cover" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <Badge variant="secondary" className="mb-2 text-xs font-medium">Publishing</Badge>
-              <h2 className="text-2xl font-semibold mb-1">{selectedProduct.name}</h2>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 text-sm text-muted-foreground">
-                <span>
-                  Channel:{" "}
-                  <span className="text-foreground font-medium">
-                    {publishingStatus?.youtube_channel_title || "YouTube"}
-                  </span>
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span
-                    className={`w-2 h-2 rounded-full inline-block ${
-                      publishingStatus?.needs_reconnect ? "bg-amber-500" : "bg-primary"
-                    }`}
-                  />
-                  <span
-                    className={`font-medium ${
-                      publishingStatus?.needs_reconnect ? "text-amber-600 dark:text-amber-500" : "text-primary"
-                    }`}
-                  >
-                    {publishingStatus?.needs_reconnect ? "Reconnect required" : "Connected"}
-                  </span>
-                </span>
-                {publishingStatus?.needs_reconnect && (
-                  <div className="flex flex-wrap items-center gap-2 mt-1">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-amber-500/40 text-amber-600 dark:text-amber-500 hover:bg-amber-500/10"
-                      onClick={handleReconnect}
-                      disabled={reconnecting}
-                    >
-                      {reconnecting ? "Redirecting…" : "Reconnect YouTube"}
-                    </Button>
-                    {reconnectCountdown ? (
-                      <span className="text-xs text-muted-foreground">
-                        {reconnectCountdown}
-                      </span>
-                    ) : null}
-                  </div>
-                )}
-              </div>
-              {publishingStatus && (
-                <div className="text-xs text-muted-foreground mb-3">
-                  Published today:{" "}
-                  <span className="text-foreground font-medium">
-                    {publishingStatus.published_today}
-                  </span>{" "}
-                  / {publishingStatus.daily_video_limit}
-                </div>
-              )}
-              <div className="flex flex-wrap items-center gap-3 mb-3">
-                <span className="text-sm text-muted-foreground">
-                  Daily publish time ({publishingStatus?.daily_video_limit ?? 1} Short/s per day):
-                </span>
-                <Select
-                  value={
-                    publishingStatus?.preferred_upload_hour_utc != null
-                      ? String(publishingStatus.preferred_upload_hour_utc)
-                      : "none"
-                  }
-                  onValueChange={handleUploadHourChange}
-                  disabled={savingHour}
-                >
-                  <SelectTrigger className="w-[140px]">
-                    <SelectValue placeholder="Select time (UTC)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Not set</SelectItem>
-                    {Array.from({ length: 24 }, (_, i) => (
-                      <SelectItem key={i} value={String(i)}>
-                        {String(i).padStart(2, "0")}:00 UTC
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {publishingStatus?.preferred_upload_hour_utc != null && (
-                  <span className="text-xs text-muted-foreground">
-                    {publishingStatus.daily_video_limit} Short(s)/day at {String(publishingStatus.preferred_upload_hour_utc).padStart(2, "0")}:00 UTC
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="flex-shrink-0">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive hover:bg-destructive/10">
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Remove
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-12 h-12 rounded-full bg-destructive/20 flex items-center justify-center">
-                        <AlertTriangle className="w-6 h-6 text-destructive" />
-                      </div>
-                      <AlertDialogTitle className="text-xl font-semibold">Remove from queue?</AlertDialogTitle>
-                    </div>
-                    <AlertDialogDescription className="text-sm leading-relaxed text-muted-foreground">
-                      This will remove <strong>{selectedProduct.name}</strong> from your publishing queue and reset setup. You can add new content anytime in the Content Calendar.
-                      <br /><br />
-                      <span className="text-destructive/90 font-medium">This cannot be undone.</span>
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleRemoveProduct} disabled={isRemoving} className="bg-destructive hover:bg-destructive/90 text-white">
-                      {isRemoving ? "Removing…" : "Remove"}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          </div>
-        </Card>
-        )}
-
-        {/* Publishing logs */}
-        {publishingLogs.length > 0 && (
-          <Card className="mb-8 border border-border rounded-2xl">
-            <CardHeader>
-              <CardTitle className="text-base font-semibold">Publish history</CardTitle>
-              <CardDescription className="text-sm">Recent automated uploads</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {publishingLogs.slice(0, 5).map((l) => (
-                <div key={l.id} className="flex items-center justify-between gap-3 text-sm">
-                  <span className="text-muted-foreground truncate">
-                    {l.video_filename || "(pre-check)"}{l.status === "failed" && l.error_message ? ` — ${l.error_message}` : ""}
-                  </span>
-                  <Badge variant={l.status === "failed" ? "destructive" : "secondary"}>
-                    {l.status}
-                  </Badge>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Stats */}
-        <div className="grid md:grid-cols-4 gap-5 mb-8">
-          <Card className="p-6 border border-border rounded-2xl hover-glow transition-all">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Content</span>
-              <Package className="h-4 w-4 text-muted-foreground/60" />
-            </div>
-            <div className="font-display text-4xl font-bold tracking-tight">1</div>
-            <p className="text-xs text-muted-foreground mt-1">In queue</p>
-          </Card>
-
-          <Card className="p-6 border border-border rounded-2xl hover-glow transition-all">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Shorts</span>
-              <Video className="h-4 w-4 text-muted-foreground/60" />
-            </div>
-            <div className="font-display text-4xl font-bold tracking-tight">24</div>
-            <p className="text-xs text-muted-foreground mt-1">This month</p>
-          </Card>
-
-          <Card className="p-6 border border-border rounded-2xl hover-glow transition-all">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Views</span>
-              <TrendingUp className="h-4 w-4 text-muted-foreground/60" />
-            </div>
-            <div className="font-display text-4xl font-bold tracking-tight">12.4K</div>
-            <p className="text-xs text-muted-foreground mt-1">+15% vs last week</p>
-          </Card>
-
-          <Card className="p-6 border border-border rounded-2xl hover-glow transition-all">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Watch time</span>
-              <BarChart3 className="h-4 w-4 text-muted-foreground/60" />
-            </div>
-            <div className="font-display text-4xl font-bold tracking-tight">42h</div>
-            <p className="text-xs text-muted-foreground mt-1">Total</p>
-          </Card>
-        </div>
-
-        {/* Automation */}
-        <Card className="mb-8 border border-border rounded-2xl">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Youtube className="h-4 w-4 text-muted-foreground" />
-              Automation
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              <span className="flex items-center gap-2">
-                <span className={`w-1.5 h-1.5 rounded-full ${publishingStatus?.needs_reconnect ? "bg-amber-500" : "bg-primary"}`} />
-                {publishingStatus?.needs_reconnect ? "YouTube reconnect required" : "YouTube connected"}
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Auto publishing
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Next upload scheduled
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Main Content Grid */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Performance */}
-          <Card className="border border-border bg-white">
-            <CardHeader>
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                Performance
-              </CardTitle>
-              <CardDescription className="text-sm">Shorts performance</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Avg. watch time</span>
-                  <span className="text-sm font-semibold">1m 42s</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">CTR</span>
-                  <span className="text-sm font-semibold">4.8%</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">New subscribers</span>
-                  <span className="text-sm font-semibold text-primary">+127</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Recent Activity */}
-          <Card className="border border-border bg-white">
-            <CardHeader>
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Video className="h-4 w-4 text-muted-foreground" />
-                Recent Shorts
-              </CardTitle>
-              <CardDescription className="text-sm">Most recent uploads</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-foreground/90">Short #24</span>
-                  <span className="text-sm font-medium text-primary">1.2K views</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-foreground/90">Short #23</span>
-                  <span className="text-sm font-medium text-primary">980 views</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-foreground/90">Short #22</span>
-                  <span className="text-sm font-medium text-primary">1.5K views</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Calendar */}
-        <div className="mt-16">
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold tracking-tight mb-1">Content calendar</h2>
-            <p className="text-muted-foreground text-sm">Your scheduled Shorts for the next 4 weeks</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-4 mb-6">
-            <Card className="p-5 border border-border bg-white">
-              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">This month</div>
-              <div className="text-2xl font-semibold tracking-tight">24</div>
-              <p className="text-xs text-muted-foreground mt-1">Shorts scheduled</p>
-            </Card>
-            <Card className="p-5 border border-border bg-white">
-              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Next upload</div>
-              <div className="text-2xl font-semibold tracking-tight">
-                {publishingStatus?.preferred_upload_hour_utc != null ? countdown || "—" : "—"}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {scheduledLabel ? `Today at ${scheduledLabel}` : "Set publish time above"}
-              </p>
-            </Card>
-            <Card className="p-5 border border-border bg-white">
-              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">This week</div>
-              <div className="text-2xl font-semibold tracking-tight">12.4K</div>
-              <p className="text-xs text-muted-foreground mt-1">Views</p>
-            </Card>
-          </div>
-
-          <Card className="p-6 border border-border bg-white">
-            <div className="grid grid-cols-7 gap-4">
-              {scheduledVideos.slice(0, 28).map((video) => (
-                <Dialog key={video.day}>
-                  <DialogTrigger asChild>
-                    <div
-                      className={`aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ${
-                        video.hasVideo
-                          ? "hover:ring-2 hover:ring-primary/50 hover:ring-offset-2 hover:ring-offset-white"
-                          : "bg-muted/80"
-                      }`}
-                      onMouseEnter={() => setHoveredDay(video.day)}
-                      onMouseLeave={() => setHoveredDay(null)}
-                    >
-                      {video.hasVideo ? (
-                        <div className="relative w-full h-full group">
-                          <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <div className="absolute bottom-1 left-1 right-1">
-                              <Badge variant="secondary" className="text-xs px-1 py-0 mb-1">{video.time}</Badge>
-                            </div>
-                          </div>
-                          <div className="absolute top-1 left-1">
-                            <Badge variant="default" className="text-xs px-1.5 py-0">{video.day}</Badge>
-                          </div>
-                          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Video className="w-6 h-6 text-primary" />
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center">
-                          <span className="text-2xl font-bold text-muted-foreground/50">{video.day}</span>
-                          <span className="text-xs text-muted-foreground/50">{getDayName(video.day)}</span>
-                        </div>
-                      )}
-                    </div>
-                  </DialogTrigger>
-                  {video.hasVideo && (
-                    <DialogContent className="bg-white border-border">
-                      <DialogHeader>
-                        <DialogTitle>{video.title}</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div className="aspect-video bg-secondary rounded-lg overflow-hidden">
-                          <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <CalendarIcon className="w-4 h-4" />
-                            <span>Day {video.day} · {video.time} UTC</span>
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm" className="flex-1">
-                            <Eye className="w-4 h-4 mr-2" /> Preview
-                          </Button>
-                          <Button variant="outline" size="sm" className="flex-1">
-                            <CalendarIcon className="w-4 h-4 mr-2" /> Reschedule
-                          </Button>
-                          <Button variant="ghost" size="sm" className="flex-1 text-muted-foreground hover:text-destructive">
-                            <Trash2 className="w-4 h-4 mr-2" /> Remove
-                          </Button>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  )}
-                </Dialog>
-              ))}
-            </div>
-          </Card>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full glass text-xs text-muted-foreground">
+          <Sparkles className="h-3 w-3 text-primary" />
+          Pro Trial · 12 days left
         </div>
       </div>
-    </ProtectedRoute>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+        {stats.map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.07 }}
+            className="group p-6 rounded-2xl bg-card border border-border hover-glow transition-all duration-300 relative overflow-hidden"
+          >
+            <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgGlow} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm text-muted-foreground">{stat.label}</span>
+                <div className="w-10 h-10 rounded-xl bg-muted/40 flex items-center justify-center group-hover:bg-muted/60 transition-colors">
+                  <stat.icon className={`h-5 w-5 ${stat.color}`} />
+                </div>
+              </div>
+              <p className="font-display text-4xl font-bold tracking-tight">{stat.value}</p>
+              <div className="flex items-center gap-1 mt-1.5">
+                <ArrowUpRight className={`h-3 w-3 ${stat.color}`} />
+                <p className={`text-xs font-medium ${stat.color}`}>{stat.change}</p>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Activity & Analytics */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Recent Activity */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="lg:col-span-2 rounded-2xl bg-card border border-border overflow-hidden"
+        >
+          <div className="p-6 border-b border-border flex items-center justify-between">
+            <h2 className="font-display font-semibold text-lg">Recent Activity</h2>
+            <span className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-3 py-1.5 rounded-full bg-muted/50">Last 7 days</span>
+          </div>
+          <div className="divide-y divide-border/70">
+            {recentActivity.map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + i * 0.05 }}
+                className="px-6 py-5 flex items-center justify-between hover:bg-muted/20 transition-colors cursor-pointer group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-muted/40 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                    <Play className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium group-hover:text-primary transition-colors">{item.title}</p>
+                    <p className="text-xs text-muted-foreground">{item.time}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-xs text-muted-foreground">{item.views} views</span>
+                  <span
+                    className={`text-[10px] px-2.5 py-1 rounded-full font-semibold uppercase tracking-wider ${
+                      item.status === "Published"
+                        ? "bg-success/10 text-success border border-success/20"
+                        : item.status === "Scheduled"
+                        ? "bg-primary/10 text-primary border border-primary/20"
+                        : "bg-muted text-muted-foreground border border-border"
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Views Chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="rounded-2xl bg-card border border-border p-6"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="font-display font-semibold text-lg">Views</h2>
+            <div className="flex items-center gap-1.5 text-success text-xs font-semibold">
+              <ArrowUpRight className="h-3.5 w-3.5" />
+              +18% this week
+            </div>
+          </div>
+          <p className="text-3xl font-display font-bold tracking-tight mb-4">53.4K</p>
+          <div className="grid grid-cols-3 gap-3 mb-5">
+            {[
+              { label: "Subscribers", value: "+1,240", change: "+8%" },
+              { label: "Watch Time", value: "842h", change: "+15%" },
+              { label: "Engagement", value: "4.2%", change: "+0.3%" },
+            ].map((m) => (
+              <div key={m.label} className="rounded-xl bg-muted/30 border border-border/50 p-3 text-center">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">{m.label}</p>
+                <p className="text-sm font-bold">{m.value}</p>
+                <span className="text-[9px] text-success font-semibold">{m.change}</span>
+              </div>
+            ))}
+          </div>
+          <div className="h-52 -mx-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={viewsData} barCategoryGap="20%">
+                <defs>
+                  <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(217, 91%, 60%)" stopOpacity={1} />
+                    <stop offset="100%" stopColor="hsl(217, 91%, 60%)" stopOpacity={0.3} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: "hsl(220, 10%, 50%)", fontSize: 11 }} dy={8} />
+                <Tooltip
+                  contentStyle={{
+                    background: "hsl(225, 20%, 12%)",
+                    border: "1px solid hsl(220, 15%, 20%)",
+                    borderRadius: "10px",
+                    fontSize: "12px",
+                    color: "hsl(220, 10%, 90%)",
+                  }}
+                  formatter={(value: number) => [`${(value / 1000).toFixed(1)}K`, "Views"]}
+                  cursor={{ fill: "hsl(220, 15%, 14%)" }}
+                />
+                <Bar dataKey="views" fill="url(#barGradient)" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
   );
 };
 
