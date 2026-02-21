@@ -75,8 +75,6 @@ const NavbarWithScroll = () => {
 
   const navLinks = [
     { name: "Dashboard", href: "/dashboard" },
-    { name: "Pricing", href: "/pricing" },
-    { name: "Docs", href: "/help" },
   ];
 
   const navClass = isScrolled
