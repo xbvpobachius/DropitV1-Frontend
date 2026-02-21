@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Upload,
   CalendarDays,
+  Bell,
   Settings,
   LogOut,
   Zap,
@@ -17,6 +18,7 @@ const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard/overview" },
   { label: "Upload", icon: Upload, href: "/dashboard/upload" },
   { label: "Calendar", icon: CalendarDays, href: "/dashboard/calendar" },
+  { label: "Notifications", icon: Bell, href: "/dashboard/notifications" },
   { label: "Settings", icon: Settings, href: "/dashboard/settings" },
 ];
 

@@ -170,12 +170,30 @@ const UploadPage = () => {
     }
   };
 
+  const [isUploading, setIsUploading] = useState(false);
+
   const uploadAll = async () => {
     const toUpload = files.filter((f) => f.status === "pending");
-    for (const p of toUpload) {
-      await uploadOne(p);
+    if (toUpload.length === 0) return;
+    setIsUploading(true);
+    try {
+      for (const p of toUpload) {
+        await uploadOne(p);
+      }
+    } finally {
+      setIsUploading(false);
     }
   };
+
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (isUploading) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isUploading]);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -195,6 +213,11 @@ const UploadPage = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      {isUploading && (
+        <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 text-sm font-medium">
+          Upload in progress — please don&apos;t leave this page until it finishes.
+        </div>
+      )}
       <div className="mb-10">
         <h1 className="font-display text-3xl font-bold">Upload</h1>
         <p className="text-sm text-muted-foreground mt-2">

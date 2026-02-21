@@ -68,16 +68,16 @@ const Settings = () => {
         prev ? { ...prev, preferred_upload_hour_utc: updated.preferred_upload_hour_utc ?? null } : null
       );
       toast({
-        title: "Hora desada",
+        title: "Hour saved",
         description:
           value != null
-            ? `Es publicarà ${publishingStatus?.daily_video_limit ?? 1} vídeo/dia a les ${String(value).padStart(2, "0")}:00 UTC.`
-            : "Hora de pujada esborrada.",
+            ? `${publishingStatus?.daily_video_limit ?? 1} video(s)/day will be published at ${String(value).padStart(2, "0")}:00 UTC.`
+            : "Upload hour cleared.",
       });
     } catch (e) {
       toast({
         title: "Error",
-        description: e instanceof Error ? e.message : "No s'ha pogut desar la hora",
+        description: e instanceof Error ? e.message : "Could not save the hour",
         variant: "destructive",
       });
     } finally {
@@ -159,20 +159,20 @@ const Settings = () => {
               </CardContent>
             </Card>
 
-            {/* Programació de vídeos (hora de pujada diària) */}
+            {/* Video scheduling (daily upload hour) */}
             <Card className="rounded-2xl border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="h-5 w-5 text-primary" />
-                  Programació de vídeos
+                  Video scheduling
                 </CardTitle>
                 <CardDescription>
-                  Segons el teu pla es publica fins a {publishingStatus?.daily_video_limit ?? 1} vídeo/dia. Tria a quina hora (UTC) vols la pujada diària.
+                  According to your plan, up to {publishingStatus?.daily_video_limit ?? 1} video(s)/day can be published. Choose your preferred daily upload time (UTC).
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex flex-wrap items-center gap-3">
-                  <Label className="text-sm font-medium">Hora de pujada (UTC)</Label>
+                  <Label className="text-sm font-medium">Upload hour (UTC)</Label>
                   <Select
                     value={
                       publishingStatus?.preferred_upload_hour_utc != null
@@ -183,10 +183,10 @@ const Settings = () => {
                     disabled={savingHour}
                   >
                     <SelectTrigger className="w-[160px]">
-                      <SelectValue placeholder="Tria l'hora" />
+                      <SelectValue placeholder="Choose hour" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">No configurada</SelectItem>
+                      <SelectItem value="none">Not set</SelectItem>
                       {Array.from({ length: 24 }, (_, i) => (
                         <SelectItem key={i} value={String(i)}>
                           {String(i).padStart(2, "0")}:00 UTC
@@ -196,7 +196,7 @@ const Settings = () => {
                   </Select>
                   {publishingStatus?.preferred_upload_hour_utc != null && (
                     <span className="text-sm text-muted-foreground">
-                      {publishingStatus.daily_video_limit} vídeo(s)/dia a les{" "}
+                      {publishingStatus.daily_video_limit} video(s)/day at{" "}
                       {String(publishingStatus.preferred_upload_hour_utc).padStart(2, "0")}:00 UTC
                     </span>
                   )}

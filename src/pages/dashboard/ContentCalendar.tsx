@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Play, Clock, Upload } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, Clock, Upload, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -10,6 +10,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -85,13 +88,17 @@ const ContentCalendar = () => {
   const [loading, setLoading] = useState(false);
   const [publishingStatus, setPublishingStatus] = useState<PublishingStatus | null>(null);
   const [savingHour, setSavingHour] = useState(false);
-  const [previewVideo, setPreviewVideo] = useState<{ id: string; title: string; scheduled_for: string } | null>(null);
+  const [previewVideo, setPreviewVideo] = useState<{ id: string; title: string; scheduled_for: string; status: string } | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [rescheduleDate, setRescheduleDate] = useState("");
+  const [rescheduleHour, setRescheduleHour] = useState(12);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
 
   const handleVideoClick = async (v: ScheduledVideo) => {
-    setPreviewVideo({ id: v.id, title: v.title, scheduled_for: v.scheduled_for });
+    setPreviewVideo({ id: v.id, title: v.title, scheduled_for: v.scheduled_for, status: v.status });
     setPreviewUrl(null);
     setPreviewLoading(true);
     try {
@@ -107,11 +114,63 @@ const ContentCalendar = () => {
     } finally {
       setPreviewLoading(false);
     }
+    if (v.scheduled_for) {
+      const d = new Date(v.scheduled_for);
+      setRescheduleDate(d.toISOString().slice(0, 10));
+      setRescheduleHour(d.getUTCHours());
+    }
   };
 
   const closePreview = () => {
     setPreviewVideo(null);
     setPreviewUrl(null);
+  };
+
+  const canEditVideo = previewVideo && (previewVideo.status === "scheduled" || previewVideo.status === "draft");
+
+  const handleReschedule = async () => {
+    if (!previewVideo || !canEditVideo) return;
+    setSaving(true);
+    try {
+      await apiFetch(`/videos/${previewVideo.id}/schedule`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          scheduled_date: rescheduleDate,
+          scheduled_hour: rescheduleHour,
+        }),
+      });
+      toast({ title: "Rescheduled", description: "Video has been moved to the new date and time." });
+      closePreview();
+      fetchScheduled();
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: e instanceof Error ? e.message : "Could not reschedule",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!previewVideo || !canEditVideo) return;
+    if (!confirm("Are you sure you want to delete this video?")) return;
+    setDeleting(true);
+    try {
+      await apiFetch(`/videos/${previewVideo.id}`, { method: "DELETE" });
+      toast({ title: "Deleted", description: "Video has been removed." });
+      closePreview();
+      fetchScheduled();
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: e instanceof Error ? e.message : "Could not delete",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const fetchScheduled = useCallback(async () => {
@@ -406,6 +465,46 @@ const ContentCalendar = () => {
               />
             )}
           </div>
+          {canEditVideo && (
+            <div className="mt-6 pt-4 border-t border-border space-y-4">
+              <h3 className="text-sm font-semibold">Move or delete</h3>
+              <div className="flex flex-wrap gap-4 items-end">
+                <div>
+                  <Label className="text-xs">Date</Label>
+                  <Input
+                    type="date"
+                    value={rescheduleDate}
+                    onChange={(e) => setRescheduleDate(e.target.value)}
+                    className="w-36 mt-1"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Hour (UTC)</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    max={23}
+                    value={rescheduleHour}
+                    onChange={(e) => setRescheduleHour(parseInt(e.target.value, 10) || 0)}
+                    className="w-20 mt-1"
+                  />
+                </div>
+                <Button size="sm" onClick={handleReschedule} disabled={saving}>
+                  {saving ? "Saving..." : "Move"}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="gap-1.5"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  {deleting ? "Deleting..." : "Delete"}
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </motion.div>
