@@ -85,57 +85,60 @@ const NavbarWithScroll = () => {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 px-4 py-3 transition-all duration-200 ${navClass}`}>
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center h-14">
-          <div className="flex-1">
-            <Link to="/" className="text-xl font-bold text-foreground hover:text-primary transition-colors">
-              Drop<span className="text-primary">It</span>
+      <div className="max-w-5xl mx-auto relative flex items-center justify-between h-14">
+        {/* Logo - left */}
+        <Link
+          to="/"
+          className="text-xl font-bold text-foreground hover:text-primary transition-colors shrink-0"
+        >
+          Drop<span className="text-primary">It</span>
+        </Link>
+
+        {/* Nav links - absolutely centered */}
+        <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-10">
+          {navLinks.map((link) => (
+            <Link
+              key={link.name}
+              to={link.href}
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {link.name}
             </Link>
-          </div>
-
-          <div className="hidden md:flex flex-1 items-center justify-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {link.name}
-              </Link>
-            ))}
-          </div>
-
-          <div className="hidden md:flex flex-1 items-center justify-end gap-3">
-            {user ? (
-              <>
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/80">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium text-foreground truncate max-w-[140px]">{user.email}</span>
-                </div>
-                <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign out
-                </Button>
-              </>
-            ) : (
-              <>
-                <Link to="/auth">
-                  <Button variant="ghost" size="sm">Sign in</Button>
-                </Link>
-                <Link to="/auth?mode=signup">
-                  <Button size="sm">Get started</Button>
-                </Link>
-              </>
-            )}
-          </div>
-
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-muted"
-          >
-            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          ))}
         </div>
+
+        {/* Right - CTA or user, matches logo width for balance */}
+        <div className="hidden md:flex items-center justify-end gap-3 shrink-0 min-w-[140px]">
+          {user ? (
+            <>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/80">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground truncate max-w-[120px]">{user.email}</span>
+              </div>
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link to="/auth">
+                <Button variant="ghost" size="sm">Sign in</Button>
+              </Link>
+              <Link to="/auth?mode=signup">
+                <Button size="sm">Get started</Button>
+              </Link>
+            </>
+          )}
+        </div>
+
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="md:hidden p-2 -mr-2 rounded-lg hover:bg-muted shrink-0"
+        >
+          {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </div>
 
         {isMenuOpen && (
           <div className="md:hidden py-4 space-y-2 border-t border-border animate-fade-in">
