@@ -266,7 +266,7 @@ const Pricing = () => {
                   )}
                   {isActive && (
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <span className="bg-emerald-600 text-white px-5 py-2 rounded-full text-sm font-semibold shadow-md">
+                      <span className="bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-semibold shadow-md">
                         Current plan
                       </span>
                     </div>

@@ -25,8 +25,8 @@ const CreateStore = () => {
       description: "Skip this step and continue with your existing store setup",
       Icon: Store,
       action: "skip",
-      gradient: "from-green-500/20 to-emerald-500/20",
-      iconColor: "text-green-500"
+      gradient: "from-primary/20 to-primary/10",
+      iconColor: "text-primary"
     },
     {
       id: "external",

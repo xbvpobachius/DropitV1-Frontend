@@ -348,12 +348,12 @@ const Overview = () => {
                 <span className="flex items-center gap-1.5">
                   <span
                     className={`w-2 h-2 rounded-full inline-block ${
-                      publishingStatus?.needs_reconnect ? "bg-amber-500" : "bg-emerald-500"
+                      publishingStatus?.needs_reconnect ? "bg-amber-500" : "bg-primary"
                     }`}
                   />
                   <span
                     className={`font-medium ${
-                      publishingStatus?.needs_reconnect ? "text-amber-600 dark:text-amber-500" : "text-emerald-600 dark:text-emerald-500"
+                      publishingStatus?.needs_reconnect ? "text-amber-600 dark:text-amber-500" : "text-primary"
                     }`}
                   >
                     {publishingStatus?.needs_reconnect ? "Reconnect required" : "Connected"}
@@ -526,14 +526,14 @@ const Overview = () => {
           <CardContent>
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
               <span className="flex items-center gap-2">
-                <span className={`w-1.5 h-1.5 rounded-full ${publishingStatus?.needs_reconnect ? "bg-amber-500" : "bg-emerald-500"}`} />
+                <span className={`w-1.5 h-1.5 rounded-full ${publishingStatus?.needs_reconnect ? "bg-amber-500" : "bg-primary"}`} />
                 {publishingStatus?.needs_reconnect ? "YouTube reconnect required" : "YouTube connected"}
               </span>
               <span className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Auto publishing
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Auto publishing
               </span>
               <span className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Next upload scheduled
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Next upload scheduled
               </span>
             </div>
           </CardContent>
