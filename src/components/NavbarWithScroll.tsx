@@ -86,12 +86,14 @@ const NavbarWithScroll = () => {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 px-4 py-3 transition-all duration-200 ${navClass}`}>
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between h-14">
-          <Link to="/" className="text-xl font-bold text-foreground hover:text-primary transition-colors">
-            Drop<span className="text-primary">It</span>
-          </Link>
+        <div className="flex items-center h-14">
+          <div className="flex-1">
+            <Link to="/" className="text-xl font-bold text-foreground hover:text-primary transition-colors">
+              Drop<span className="text-primary">It</span>
+            </Link>
+          </div>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex flex-1 items-center justify-center gap-8">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -103,7 +105,7 @@ const NavbarWithScroll = () => {
             ))}
           </div>
 
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex flex-1 items-center justify-end gap-3">
             {user ? (
               <>
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/80">
