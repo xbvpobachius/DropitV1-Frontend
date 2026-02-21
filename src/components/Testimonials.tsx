@@ -2,25 +2,25 @@ import { Star } from "lucide-react";
 
 const testimonials = [
   {
-    name: "Alex Rivera",
-    location: "Miami, FL",
-    image: "👨‍💼",
+    name: "Alex R.",
+    location: "Creator",
+    image: "👤",
     rating: 5,
-    text: "DropIt helped me automate 5 stores and 3x my sales in just 2 months. The AI video generator is a game changer.",
+    text: "Finally I can plan my Shorts in advance. No more rushing to post every day.",
   },
   {
-    name: "Sarah Chen",
-    location: "Los Angeles, CA",
-    image: "👩‍💻",
+    name: "Sarah C.",
+    location: "Influencer",
+    image: "👤",
     rating: 5,
-    text: "Finally, a tool that delivers. My YouTube channel is growing on autopilot.",
+    text: "My channel stays consistent now. I batch my content on weekends and forget about it.",
   },
   {
-    name: "Marcus Johnson",
-    location: "New York, NY",
-    image: "🧑‍🚀",
+    name: "Marcus J.",
+    location: "Content creator",
+    image: "👤",
     rating: 5,
-    text: "Game changer for my agency. We're managing 50+ brands with DropIt.",
+    text: "Simple tool that does one thing well. Scheduling without the stress.",
   },
 ];
 
@@ -33,7 +33,7 @@ const Testimonials = () => {
             Loved by creators
           </h2>
           <p className="text-muted-foreground">
-            What our users say about DropIt
+            What influencers say about DropIt
           </p>
         </div>
 

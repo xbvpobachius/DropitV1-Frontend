@@ -28,7 +28,7 @@ const Footer = () => {
               Drop<span className="text-primary">It</span>
             </Link>
             <p className="text-sm text-muted-foreground mt-2 mb-4">
-              YouTube Shorts automation for creators.
+              Plan, schedule & automate your YouTube Shorts. For influencers and creators.
             </p>
             <a
               href="#"

@@ -1,32 +1,25 @@
-import { Video, Calendar, Globe, BarChart3 } from "lucide-react";
-import featureVideo from "@/assets/feature-video.jpg";
-import featureCalendar from "@/assets/feature-calendar.jpg";
-import featureWebsite from "@/assets/feature-website.jpg";
+import { Calendar, Clock, Youtube, Zap } from "lucide-react";
 
 const features = [
   {
-    icon: Video,
-    title: "AI Video Generator",
-    description: "Turn product footage into YouTube Shorts. No editing skills required.",
-    image: featureVideo,
-  },
-  {
     icon: Calendar,
-    title: "Smart Scheduler",
-    description: "Publish automatically at optimal times. Keep your channel consistent.",
-    image: featureCalendar,
+    title: "Plan ahead",
+    description: "Schedule your Shorts days or weeks in advance. Batch your content and forget about daily posting.",
   },
   {
-    icon: Globe,
-    title: "AI Website Builder",
-    description: "Generate landing pages for each product in seconds.",
-    image: featureWebsite,
+    icon: Clock,
+    title: "Set your times",
+    description: "Choose when your content goes live. One schedule for your whole channel.",
   },
   {
-    icon: BarChart3,
-    title: "Analytics",
-    description: "Track views, engagement and performance in real time.",
-    image: featureVideo,
+    icon: Youtube,
+    title: "Connect once",
+    description: "Link your YouTube channel. We publish automatically at the times you set.",
+  },
+  {
+    icon: Zap,
+    title: "Stay consistent",
+    description: "Build your audience with a steady flow of content. No more last-minute uploads.",
   },
 ];
 
@@ -36,35 +29,26 @@ const Features = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-            Built for creators
+            Built for busy creators
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to run your Shorts workflow
+            Simple automation so you can focus on creating
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group bg-white rounded-xl border-2 border-border overflow-hidden hover-lift hover:border-primary/30"
+              className="group bg-white rounded-xl border-2 border-border p-6 hover-lift hover:border-primary/30"
             >
-              <div className="aspect-video overflow-hidden bg-muted/50">
-                <img
-                  src={feature.image}
-                  alt={feature.title}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
+              <div className="inline-flex p-3 rounded-xl bg-primary/10 border border-primary/20 mb-4">
+                <feature.icon className="h-5 w-5 text-primary" />
               </div>
-              <div className="p-6">
-                <div className="inline-flex p-3 rounded-xl bg-primary/10 border border-primary/20 mb-4">
-                  <feature.icon className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-foreground">{feature.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
+              <h3 className="text-lg font-semibold mb-2 text-foreground">{feature.title}</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                {feature.description}
+              </p>
             </div>
           ))}
         </div>

@@ -8,27 +8,27 @@ const Help = () => {
   const faqs = [
     {
       question: "How does DropIt work?",
-      answer: "DropIt automates your entire dropshipping workflow. Simply select a product, and our AI will generate your store, create engaging videos, and publish them automatically to YouTube."
+      answer: "Connect your YouTube channel, add your Shorts to the calendar, and set publish times. DropIt publishes them automatically at the schedule you choose."
     },
     {
-      question: "What platforms does DropIt support?",
-      answer: "DropIt focuses on YouTube organic marketing, including YouTube Shorts automation for maximum reach and engagement."
+      question: "What does DropIt do?",
+      answer: "DropIt automates the scheduling and publishing of your YouTube Shorts. Plan your content in advance and we handle the uploads at the times you set."
     },
     {
-      question: "How many videos can I create per day?",
-      answer: "It depends on your plan: Starter allows 1 video/day, Pro allows 2 videos/day, and Business allows 3 videos/day. All videos are AI-generated and optimized for engagement."
+      question: "How many Shorts can I schedule per day?",
+      answer: "It depends on your plan: Starter allows 1 Short/day, Pro allows 2/day, and Business allows 3/day. Check the pricing page for details."
     },
     {
-      question: "Can I customize the videos?",
-      answer: "Yes! While our AI handles the heavy lifting, you can customize video style, captions, and posting schedule through your dashboard."
+      question: "Can I change my publish times?",
+      answer: "Yes. You can set and update your daily publish times in the dashboard. Changes apply to future uploads."
     },
     {
-      question: "Do I need any technical skills?",
-      answer: "No! DropIt is designed to be completely beginner-friendly. If you can click a button, you can run a dropshipping business with DropIt."
+      question: "Do I need technical skills?",
+      answer: "No. DropIt is built for creators. Connect your channel, plan your content, and we take care of the rest."
     },
     {
       question: "What's included in the free trial?",
-      answer: "The 7-day free trial on our Starter plan gives you full access to 1 product, 1 store, and 1 video per day with no credit card required."
+      answer: "The 7-day free trial gives you full access to schedule and publish Shorts. No credit card required."
     },
   ];
 
@@ -55,7 +55,7 @@ const Help = () => {
                 <BookOpen className="h-6 w-6 text-primary" />
                 Getting Started with DropIt
               </CardTitle>
-              <CardDescription>Follow these 4 simple steps to start your dropshipping journey</CardDescription>
+              <CardDescription>Get started in three steps</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex gap-4">
@@ -63,8 +63,8 @@ const Help = () => {
                   1
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-1">Select Your Product</h3>
-                  <p className="text-muted-foreground">Browse our trending products page and choose winning products curated by AI.</p>
+                  <h3 className="font-semibold mb-1">Connect YouTube</h3>
+                  <p className="text-muted-foreground">Link your YouTube channel via secure OAuth. You stay in control and can revoke access anytime.</p>
                 </div>
               </div>
 
@@ -73,8 +73,8 @@ const Help = () => {
                   2
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-1">Generate Your Website with AI</h3>
-                  <p className="text-muted-foreground">Our AI instantly creates a professional dropshipping store optimized for conversions.</p>
+                  <h3 className="font-semibold mb-1">Plan & schedule</h3>
+                  <p className="text-muted-foreground">Add your Shorts to the calendar and choose when each one should go live. Plan days or weeks ahead.</p>
                 </div>
               </div>
 
@@ -83,18 +83,8 @@ const Help = () => {
                   3
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-1">Create and Schedule Videos Automatically</h3>
-                  <p className="text-muted-foreground">AI generates engaging product videos and schedules them to publish on YouTube.</p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-                  4
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Watch Your Organic Sales Grow</h3>
-                  <p className="text-muted-foreground">Monitor performance, track analytics, and scale your business effortlessly.</p>
+                  <h3 className="font-semibold mb-1">Publish automatically</h3>
+                  <p className="text-muted-foreground">We upload your Shorts at the times you set. No manual work. Stay consistent without the stress.</p>
                 </div>
               </div>
             </CardContent>
