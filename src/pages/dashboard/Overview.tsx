@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import {
@@ -8,7 +9,56 @@ import {
   ArrowUpRight,
   Play,
   Sparkles,
+  Upload,
 } from "lucide-react";
+import { apiFetch } from "@/lib/api";
+
+interface UploadLog {
+  id: string;
+  title: string;
+  status: string;
+  scheduled_for: string | null;
+  created_at: string;
+}
+
+interface PublicationLog {
+  id: string;
+  video_filename: string;
+  published_at: string;
+  status: string;
+}
+
+type ActivityLog = {
+  type: "upload" | "publish";
+  id: string;
+  title: string;
+  status: string;
+  time: string;
+  date: Date;
+};
+
+const formatRelativeTime = (iso: string) => {
+  const d = new Date(iso);
+  const now = new Date();
+  const sec = Math.floor((now.getTime() - d.getTime()) / 1000);
+  if (sec < 60) return "Just now";
+  if (sec < 3600) return `${Math.floor(sec / 60)}m ago`;
+  if (sec < 86400) return `${Math.floor(sec / 3600)}h ago`;
+  if (sec < 604800) return `${Math.floor(sec / 86400)}d ago`;
+  return d.toLocaleDateString();
+};
+
+const formatScheduledTime = (iso: string) => {
+  const d = new Date(iso);
+  const now = new Date();
+  if (d > now) {
+    const sec = Math.floor((d.getTime() - now.getTime()) / 1000);
+    if (sec < 86400) return `In ${Math.floor(sec / 3600)}h`;
+    if (sec < 604800) return `In ${Math.floor(sec / 86400)}d`;
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  }
+  return formatRelativeTime(iso);
+};
 
 const viewsData = [
   { day: "Mon", views: 4200 },
@@ -27,15 +77,46 @@ const stats = [
   { label: "Avg. Views", value: "12.4K", icon: TrendingUp, change: "+18%", color: "text-sky-400", bgGlow: "from-sky-400/10 to-sky-400/5" },
 ];
 
-const recentActivity = [
-  { title: "Morning Routine Tips #47", status: "Published", time: "2h ago", views: "8.2K" },
-  { title: "Quick Recipe: 60s Pasta", status: "Published", time: "5h ago", views: "15.1K" },
-  { title: "Fitness Hack #12", status: "Scheduled", time: "In 2 hours", views: "—" },
-  { title: "Productivity Setup Tour", status: "Scheduled", time: "Tomorrow 9 AM", views: "—" },
-  { title: "Behind The Scenes #8", status: "Draft", time: "Created yesterday", views: "—" },
-];
-
 const Overview = () => {
+  const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!localStorage.getItem("access_token")) return;
+    const load = async () => {
+      try {
+        const [uploads, publications] = await Promise.all([
+          apiFetch<UploadLog[]>("/videos/recent?limit=10"),
+          apiFetch<PublicationLog[]>("/publishing/logs?limit=20"),
+        ]);
+        const logs: ActivityLog[] = [
+          ...uploads.map((u) => ({
+            type: "upload" as const,
+            id: u.id,
+            title: u.title,
+            status: u.status === "uploaded" ? "Published" : u.status === "scheduled" ? "Scheduled" : "Draft",
+            time: u.scheduled_for ? formatScheduledTime(u.scheduled_for) : formatRelativeTime(u.created_at),
+            date: new Date(u.created_at),
+          })),
+          ...publications.map((p) => ({
+            type: "publish" as const,
+            id: p.id,
+            title: p.video_filename,
+            status: p.status === "uploaded" ? "Published" : "Failed",
+            time: formatRelativeTime(p.published_at),
+            date: new Date(p.published_at),
+          })),
+        ];
+        logs.sort((a, b) => b.date.getTime() - a.date.getTime());
+        setActivityLogs(logs.slice(0, 15));
+      } catch {
+        setActivityLogs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <div className="mb-10 flex items-center justify-between">
@@ -94,42 +175,58 @@ const Overview = () => {
         >
           <div className="p-6 border-b border-border flex items-center justify-between">
             <h2 className="font-display font-semibold text-lg">Recent Activity</h2>
-            <span className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-3 py-1.5 rounded-full bg-muted/50">Last 7 days</span>
+            <span className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium px-3 py-1.5 rounded-full bg-muted/50">
+              Uploads &amp; Publications
+            </span>
           </div>
           <div className="divide-y divide-border/70">
-            {recentActivity.map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + i * 0.05 }}
-                className="px-6 py-5 flex items-center justify-between hover:bg-muted/20 transition-colors cursor-pointer group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl bg-muted/40 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                    <Play className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+            {loading ? (
+              <div className="px-6 py-12 text-center text-sm text-muted-foreground">Loading...</div>
+            ) : activityLogs.length === 0 ? (
+              <div className="px-6 py-12 text-center text-sm text-muted-foreground">No activity yet.</div>
+            ) : (
+              activityLogs.map((item, i) => (
+                <motion.div
+                  key={`${item.type}-${item.id}`}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 + i * 0.03 }}
+                  className="px-6 py-5 flex items-center justify-between hover:bg-muted/20 transition-colors cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-xl bg-muted/40 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                      {item.type === "upload" ? (
+                        <Upload className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                      ) : (
+                        <Play className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium truncate max-w-[180px] group-hover:text-primary transition-colors">
+                        {item.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{item.time}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium group-hover:text-primary transition-colors">{item.title}</p>
-                    <p className="text-xs text-muted-foreground">{item.time}</p>
+                  <div className="flex items-center gap-4">
+                    <span className="text-[10px] text-muted-foreground uppercase">{item.type}</span>
+                    <span
+                      className={`text-[10px] px-2.5 py-1 rounded-full font-semibold uppercase tracking-wider ${
+                        item.status === "Published"
+                          ? "bg-success/10 text-success border border-success/20"
+                          : item.status === "Scheduled"
+                          ? "bg-primary/10 text-primary border border-primary/20"
+                          : item.status === "Failed"
+                          ? "bg-destructive/10 text-destructive border border-destructive/20"
+                          : "bg-muted text-muted-foreground border border-border"
+                      }`}
+                    >
+                      {item.status}
+                    </span>
                   </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-xs text-muted-foreground">{item.views} views</span>
-                  <span
-                    className={`text-[10px] px-2.5 py-1 rounded-full font-semibold uppercase tracking-wider ${
-                      item.status === "Published"
-                        ? "bg-success/10 text-success border border-success/20"
-                        : item.status === "Scheduled"
-                        ? "bg-primary/10 text-primary border border-primary/20"
-                        : "bg-muted text-muted-foreground border border-border"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))
+            )}
           </div>
         </motion.div>
 
