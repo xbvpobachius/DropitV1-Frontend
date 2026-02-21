@@ -116,7 +116,6 @@ export const useOnboardingFlow = () => {
   const getNextStep = (): string => {
     if (!progress) return "/dashboard/connect-youtube";
     if (!progress.youtube_connected) return "/dashboard/connect-youtube";
-    if (!progress.calendar_viewed) return "/dashboard/calendar";
     return "/dashboard/overview";
   };
 
@@ -127,9 +126,10 @@ export const useOnboardingFlow = () => {
       case "/dashboard/connect-youtube":
         return true;
       case "/dashboard/calendar":
-        return progress.youtube_connected;
       case "/dashboard/overview":
-        return progress.youtube_connected && progress.calendar_viewed;
+      case "/dashboard/upload":
+      case "/dashboard/settings":
+        return progress.youtube_connected;
       default:
         return false;
     }

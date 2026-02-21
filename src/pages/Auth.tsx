@@ -97,7 +97,7 @@ const Auth = () => {
             <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center glow-sm">
               <Zap className="h-5 w-5 text-primary" />
             </div>
-            Drop<span className="text-primary">It</span>
+            <span>Drop<span className="text-primary">It</span></span>
           </Link>
 
           <motion.h2
@@ -201,7 +201,7 @@ const Auth = () => {
               <div className="w-9 h-9 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center">
                 <Zap className="h-4.5 w-4.5 text-primary" />
               </div>
-              Drop<span className="text-primary">It</span>
+              <span>Drop<span className="text-primary">It</span></span>
             </Link>
           </div>
 

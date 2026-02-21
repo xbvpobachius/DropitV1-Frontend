@@ -25,7 +25,7 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-10">
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="text-xl font-semibold text-foreground">
-              Drop<span className="text-primary">It</span>
+              <span>Drop<span className="text-primary">It</span></span>
             </Link>
             <p className="text-sm text-muted-foreground mt-2 mb-4">
               Plan, schedule & automate your YouTube Shorts. For influencers and creators.

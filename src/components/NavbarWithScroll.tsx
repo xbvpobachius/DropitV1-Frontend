@@ -89,7 +89,7 @@ const NavbarWithScroll = () => {
           to="/"
           className="text-xl font-bold text-foreground hover:text-primary transition-colors shrink-0"
         >
-          Drop<span className="text-primary">It</span>
+          <span>Drop<span className="text-primary">It</span></span>
         </Link>
 
         {/* Nav links - centered, només quan l'usuari està connectat */}
