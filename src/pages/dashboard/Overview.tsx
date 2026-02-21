@@ -210,15 +210,15 @@ const Overview = () => {
       });
       setPublishingStatus((prev) => (prev ? { ...prev, preferred_upload_hour_utc: updated.preferred_upload_hour_utc ?? null } : null));
       toast({
-        title: "Hora desada",
+        title: "Time saved",
         description: value != null
-          ? `Els vídeos es penjaran cada dia a les ${String(value).padStart(2, "0")}:00 UTC.`
-          : "Hora de pujada esborrada.",
+          ? `Shorts will publish daily at ${String(value).padStart(2, "0")}:00 UTC.`
+          : "Publish time cleared.",
       });
     } catch (e) {
       toast({
         title: "Error",
-        description: e instanceof Error ? e.message : "No s'ha pogut desar la hora",
+        description: e instanceof Error ? e.message : "Could not save publish time",
         variant: "destructive",
       });
     } finally {
@@ -302,58 +302,57 @@ const Overview = () => {
   return (
     <ProtectedRoute requiredStep="/dashboard/overview">
       <div className="p-8 pt-32 max-w-7xl mx-auto">
-        <div className="mb-8 flex items-start justify-between">
+        <div className="mb-10 flex items-start justify-between">
           <div>
-            <h1 className="text-4xl font-bold mb-2">
-              Main <span className="text-primary">Dashboard</span>
+            <h1 className="text-3xl font-semibold tracking-tight mb-1.5">
+              Dashboard
             </h1>
-            <p className="text-muted-foreground">Business metrics and statistics</p>
+            <p className="text-muted-foreground text-sm">Content workflow and publishing status</p>
           </div>
           <ApiStatusIndicator />
         </div>
 
-        {/* Selected Product Banner */}
-        <Card className="card-premium mb-8 overflow-hidden border-2 border-primary/30 glow-primary">
+        {/* Active Content Banner */}
+        <Card className="mb-8 overflow-hidden border border-border/80 bg-card/50 backdrop-blur-sm transition-all duration-200 hover:border-border">
           <div className="flex items-center gap-6 p-6">
-            <div className="w-32 h-32 rounded-xl overflow-hidden flex-shrink-0 shadow-lg">
+            <div className="w-28 h-28 rounded-xl overflow-hidden flex-shrink-0 ring-1 ring-border/50">
               <img src={selectedProduct.image} alt={selectedProduct.name} className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1">
-              <Badge className="mb-2 bg-primary/20 text-primary border-primary/40">Active Product</Badge>
-              <h2 className="text-3xl font-bold mb-1">{selectedProduct.name}</h2>
+            <div className="flex-1 min-w-0">
+              <Badge variant="secondary" className="mb-2 text-xs font-medium">Active Content</Badge>
+              <h2 className="text-2xl font-semibold mb-1">{selectedProduct.name}</h2>
               {/* Connected Channel Info */}
-              <div className="flex flex-wrap items-center gap-3 mb-3 text-sm text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 text-sm text-muted-foreground">
                 <span>
-                  Connected Channel:{" "}
+                  Channel:{" "}
                   <span className="text-foreground font-medium">
                     {publishingStatus?.youtube_channel_title || "YouTube"}
                   </span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  Status:{" "}
                   <span
                     className={`w-2 h-2 rounded-full inline-block ${
-                      publishingStatus?.needs_reconnect ? "bg-destructive" : "bg-primary"
+                      publishingStatus?.needs_reconnect ? "bg-amber-500" : "bg-emerald-500"
                     }`}
-                  />{" "}
+                  />
                   <span
                     className={`font-medium ${
-                      publishingStatus?.needs_reconnect ? "text-destructive" : "text-primary"
+                      publishingStatus?.needs_reconnect ? "text-amber-600 dark:text-amber-500" : "text-emerald-600 dark:text-emerald-500"
                     }`}
                   >
-                    {publishingStatus?.needs_reconnect ? "Reconnect required" : "Active"}
+                    {publishingStatus?.needs_reconnect ? "Reconnect required" : "Connected"}
                   </span>
                 </span>
                 {publishingStatus?.needs_reconnect && (
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2 mt-1">
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      className="border-amber-500/40 text-amber-600 dark:text-amber-500 hover:bg-amber-500/10"
                       onClick={handleReconnect}
                       disabled={reconnecting}
                     >
-                      {reconnecting ? "Redirecting…" : "Reconnect"}
+                      {reconnecting ? "Redirecting…" : "Reconnect YouTube"}
                     </Button>
                     {reconnectCountdown ? (
                       <span className="text-xs text-muted-foreground">
@@ -365,7 +364,7 @@ const Overview = () => {
               </div>
               {publishingStatus && (
                 <div className="text-xs text-muted-foreground mb-3">
-                  Publishing today:{" "}
+                  Published today:{" "}
                   <span className="text-foreground font-medium">
                     {publishingStatus.published_today}
                   </span>{" "}
@@ -374,7 +373,7 @@ const Overview = () => {
               )}
               <div className="flex flex-wrap items-center gap-3 mb-3">
                 <span className="text-sm text-muted-foreground">
-                  Hora de pujada diària ({publishingStatus?.daily_video_limit ?? 1} vídeo/dia segons el teu pla):
+                  Daily publish time ({publishingStatus?.daily_video_limit ?? 1} Short/s per day):
                 </span>
                 <Select
                   value={
@@ -386,10 +385,10 @@ const Overview = () => {
                   disabled={savingHour}
                 >
                   <SelectTrigger className="w-[140px]">
-                    <SelectValue placeholder="Tria l'hora (UTC)" />
+                    <SelectValue placeholder="Select time (UTC)" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">No configurada</SelectItem>
+                    <SelectItem value="none">Not set</SelectItem>
                     {Array.from({ length: 24 }, (_, i) => (
                       <SelectItem key={i} value={String(i)}>
                         {String(i).padStart(2, "0")}:00 UTC
@@ -399,31 +398,31 @@ const Overview = () => {
                 </Select>
                 {publishingStatus?.preferred_upload_hour_utc != null && (
                   <span className="text-xs text-muted-foreground">
-                    Es publicarà {publishingStatus.daily_video_limit} vídeo(s)/dia a les {String(publishingStatus.preferred_upload_hour_utc).padStart(2, "0")}:00 UTC.
+                    {publishingStatus.daily_video_limit} Short(s)/day at {String(publishingStatus.preferred_upload_hour_utc).padStart(2, "0")}:00 UTC
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-6 text-sm">
                 <div>
-                  <div className="text-sm text-muted-foreground">Cost</div>
-                  <div className="text-xl font-bold text-destructive">${selectedProduct.purchasePrice.toFixed(2)}</div>
+                  <div className="text-muted-foreground">Cost</div>
+                  <div className="text-lg font-semibold">${selectedProduct.purchasePrice.toFixed(2)}</div>
                 </div>
-                <div className="text-2xl text-primary">→</div>
+                <div className="text-muted-foreground/60">→</div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Selling Price</div>
-                  <div className="text-2xl font-bold text-primary">${selectedProduct.sellingPrice.toFixed(2)}</div>
+                  <div className="text-muted-foreground">Selling Price</div>
+                  <div className="text-lg font-semibold text-primary">${selectedProduct.sellingPrice.toFixed(2)}</div>
                 </div>
                 <div className="ml-auto">
-                  <Badge className="bg-gradient-primary text-white text-lg px-4 py-2">+{selectedProduct.profit}% Profit</Badge>
+                  <Badge variant="secondary" className="font-medium">+{selectedProduct.profit}% margin</Badge>
                 </div>
               </div>
             </div>
             <div className="flex-shrink-0">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive hover:bg-destructive/10">
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Remove Product
+                    Remove
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -455,7 +454,7 @@ const Overview = () => {
 
         {/* Publishing logs (minimal) */}
         {publishingLogs.length > 0 && (
-          <Card className="card-premium mb-8">
+          <Card className="mb-8 border border-border/80 bg-card/50">
             <CardHeader>
               <CardTitle className="text-lg">Recent publishing logs</CardTitle>
               <CardDescription>Latest automatic publication attempts</CardDescription>
@@ -476,70 +475,62 @@ const Overview = () => {
         )}
 
         {/* Quick Stats */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <Card className="card-premium">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Active Products</CardTitle>
-              <Package className="h-4 w-4 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">1</div>
-              <p className="text-xs text-muted-foreground mt-1">+1 this week</p>
-            </CardContent>
+        <div className="grid md:grid-cols-4 gap-4 mb-8">
+          <Card className="p-5 border border-border/80 bg-card/50">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Products</span>
+              <Package className="h-4 w-4 text-muted-foreground/60" />
+            </div>
+            <div className="text-2xl font-semibold tracking-tight">1</div>
+            <p className="text-xs text-muted-foreground mt-1">Active</p>
           </Card>
 
-          <Card className="card-premium">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Videos Created</CardTitle>
-              <Video className="h-4 w-4 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">24</div>
-              <p className="text-xs text-muted-foreground mt-1">This month</p>
-            </CardContent>
+          <Card className="p-5 border border-border/80 bg-card/50">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Videos</span>
+              <Video className="h-4 w-4 text-muted-foreground/60" />
+            </div>
+            <div className="text-2xl font-semibold tracking-tight">24</div>
+            <p className="text-xs text-muted-foreground mt-1">This month</p>
           </Card>
 
-          <Card className="card-premium">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Views</CardTitle>
-              <TrendingUp className="h-4 w-4 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">12.4K</div>
-              <p className="text-xs text-muted-foreground mt-1">+15% from last week</p>
-            </CardContent>
+          <Card className="p-5 border border-border/80 bg-card/50">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Views</span>
+              <TrendingUp className="h-4 w-4 text-muted-foreground/60" />
+            </div>
+            <div className="text-2xl font-semibold tracking-tight">12.4K</div>
+            <p className="text-xs text-muted-foreground mt-1">+15% vs last week</p>
           </Card>
 
-          <Card className="card-premium">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Revenue</CardTitle>
-              <BarChart3 className="h-4 w-4 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">$2,847</div>
-              <p className="text-xs text-muted-foreground mt-1">All time</p>
-            </CardContent>
+          <Card className="p-5 border border-border/80 bg-card/50">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Revenue</span>
+              <BarChart3 className="h-4 w-4 text-muted-foreground/60" />
+            </div>
+            <div className="text-2xl font-semibold tracking-tight">$2,847</div>
+            <p className="text-xs text-muted-foreground mt-1">All time</p>
           </Card>
         </div>
 
         {/* Automation Status */}
-        <Card className="card-premium mb-8">
+        <Card className="mb-8 border border-border/80 bg-card/50">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Youtube className="h-4 w-4 text-primary" />
-              Automation Status
+              <Youtube className="h-4 w-4 text-muted-foreground" />
+              Automation
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-6 text-sm">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
               <span className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-primary" /> YouTube Connected
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> YouTube connected
               </span>
               <span className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-primary" /> Auto Publishing Active
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Auto publishing
               </span>
               <span className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-primary" /> Next Upload Scheduled
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Next upload scheduled
               </span>
             </div>
           </CardContent>
@@ -548,13 +539,13 @@ const Overview = () => {
         {/* Main Content Grid */}
         <div className="grid md:grid-cols-2 gap-6">
           {/* Performance */}
-          <Card className="card-premium">
+          <Card className="border border-border/80 bg-card/50">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-primary" />
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 text-muted-foreground" />
                 Performance
               </CardTitle>
-              <CardDescription>Track your channel engagement</CardDescription>
+              <CardDescription className="text-sm">Channel engagement</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -575,13 +566,13 @@ const Overview = () => {
           </Card>
 
           {/* Recent Activity */}
-          <Card className="card-premium">
+          <Card className="border border-border/80 bg-card/50">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Video className="h-5 w-5 text-primary" />
-                Recent Videos
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Video className="h-4 w-4 text-muted-foreground" />
+                Recent Shorts
               </CardTitle>
-              <CardDescription>Your latest content performance</CardDescription>
+              <CardDescription className="text-sm">Latest content performance</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -603,44 +594,44 @@ const Overview = () => {
         </div>
 
         {/* Calendar Section */}
-        <div className="mt-24">
+        <div className="mt-16">
           <div className="mb-6">
-            <h2 className="text-3xl font-bold mb-2">
-              Content <span className="text-primary">Calendar</span>
-            </h2>
-            <p className="text-muted-foreground">Manage your automated video calendar</p>
+            <h2 className="text-xl font-semibold tracking-tight mb-1">Content calendar</h2>
+            <p className="text-muted-foreground text-sm">Scheduled Shorts</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-6">
-            <Card className="card-premium p-6">
-              <div className="text-sm text-muted-foreground mb-1">Videos this month</div>
-              <div className="text-3xl font-bold text-primary">24</div>
+          <div className="grid md:grid-cols-3 gap-4 mb-6">
+            <Card className="p-5 border border-border/80 bg-card/50">
+              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">This month</div>
+              <div className="text-2xl font-semibold tracking-tight">24</div>
+              <p className="text-xs text-muted-foreground mt-1">Shorts scheduled</p>
             </Card>
-            <Card className="card-premium p-6">
-              <div className="text-sm text-muted-foreground mb-1">Next Upload In</div>
-              <div className="text-3xl font-bold text-primary">
+            <Card className="p-5 border border-border/80 bg-card/50">
+              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Next upload</div>
+              <div className="text-2xl font-semibold tracking-tight">
                 {publishingStatus?.preferred_upload_hour_utc != null ? countdown || "—" : "—"}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                {scheduledLabel ? `Scheduled for today at ${scheduledLabel}` : "Configura l'hora de pujada a dalt"}
+                {scheduledLabel ? `Today at ${scheduledLabel}` : "Set publish time above"}
               </p>
             </Card>
-            <Card className="card-premium p-6">
-              <div className="text-sm text-muted-foreground mb-1">Views this week</div>
-              <div className="text-3xl font-bold text-primary">12.4K</div>
+            <Card className="p-5 border border-border/80 bg-card/50">
+              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">This week</div>
+              <div className="text-2xl font-semibold tracking-tight">12.4K</div>
+              <p className="text-xs text-muted-foreground mt-1">Views</p>
             </Card>
           </div>
 
-          <Card className="card-premium p-6">
+          <Card className="p-6 border border-border/80 bg-card/50">
             <div className="grid grid-cols-7 gap-4">
               {scheduledVideos.slice(0, 28).map((video) => (
                 <Dialog key={video.day}>
                   <DialogTrigger asChild>
                     <div
-                      className={`aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-300 ${
+                      className={`aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ${
                         video.hasVideo
-                          ? "hover:ring-2 hover:ring-primary hover:glow-primary hover:scale-105"
-                          : "bg-secondary/50"
+                          ? "hover:ring-2 hover:ring-primary/50 hover:ring-offset-2 hover:ring-offset-background"
+                          : "bg-muted/50"
                       }`}
                       onMouseEnter={() => setHoveredDay(video.day)}
                       onMouseLeave={() => setHoveredDay(null)}
