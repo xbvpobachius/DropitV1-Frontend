@@ -5,6 +5,12 @@ import { ChevronLeft, ChevronRight, Play, Clock, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -52,6 +58,25 @@ const formatTime = (iso: string) => {
   }
 };
 
+const formatUtcAndSpain = (iso: string) => {
+  try {
+    const d = new Date(iso);
+    const utc = d.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "UTC",
+    });
+    const spain = d.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Europe/Madrid",
+    });
+    return `${utc} UTC (${spain} Spain)`;
+  } catch {
+    return "";
+  }
+};
+
 const ContentCalendar = () => {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
@@ -60,7 +85,34 @@ const ContentCalendar = () => {
   const [loading, setLoading] = useState(false);
   const [publishingStatus, setPublishingStatus] = useState<PublishingStatus | null>(null);
   const [savingHour, setSavingHour] = useState(false);
+  const [previewVideo, setPreviewVideo] = useState<{ id: string; title: string; scheduled_for: string } | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
   const { toast } = useToast();
+
+  const handleVideoClick = async (v: ScheduledVideo) => {
+    setPreviewVideo({ id: v.id, title: v.title, scheduled_for: v.scheduled_for });
+    setPreviewUrl(null);
+    setPreviewLoading(true);
+    try {
+      const res = await apiFetch<{ url: string }>(`/videos/${v.id}/preview-url`);
+      setPreviewUrl(res.url);
+    } catch (e) {
+      toast({
+        title: "Cannot preview",
+        description: e instanceof Error ? e.message : "Video may have already been published",
+        variant: "destructive",
+      });
+      setPreviewVideo(null);
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
+
+  const closePreview = () => {
+    setPreviewVideo(null);
+    setPreviewUrl(null);
+  };
 
   const fetchScheduled = useCallback(async () => {
     if (!localStorage.getItem("access_token")) return;
@@ -222,17 +274,34 @@ const ContentCalendar = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">Not set</SelectItem>
-              {Array.from({ length: 24 }, (_, i) => (
-                <SelectItem key={i} value={String(i)}>
-                  {String(i).padStart(2, "0")}:00 UTC
-                </SelectItem>
-              ))}
+              {Array.from({ length: 24 }, (_, i) => {
+                const utcStr = `${String(i).padStart(2, "0")}:00 UTC`;
+                const d = new Date(Date.UTC(2000, 5, 1, i, 0));
+                const spainStr = d.toLocaleTimeString("en-GB", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  timeZone: "Europe/Madrid",
+                });
+                return (
+                  <SelectItem key={i} value={String(i)}>
+                    {utcStr} ({spainStr} Spain)
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
           {publishingStatus?.preferred_upload_hour_utc != null && (
             <span className="text-sm text-muted-foreground">
               {publishingStatus.daily_video_limit} video(s)/day at{" "}
-              {String(publishingStatus.preferred_upload_hour_utc).padStart(2, "0")}:00 UTC
+              {String(publishingStatus.preferred_upload_hour_utc).padStart(2, "0")}:00 UTC (
+              {new Date(
+                Date.UTC(2000, 5, 1, publishingStatus.preferred_upload_hour_utc, 0)
+              ).toLocaleTimeString("en-GB", {
+                hour: "2-digit",
+                minute: "2-digit",
+                timeZone: "Europe/Madrid",
+              })}{" "}
+              Spain)
             </span>
           )}
         </div>
@@ -286,18 +355,20 @@ const ContentCalendar = () => {
                     </div>
                     {hasVideos &&
                       scheduledVideos[day].map((v, j) => (
-                        <motion.div
+                        <motion.button
                           key={v.id}
+                          type="button"
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: 0.2 + j * 0.05 }}
-                          className="mt-1.5 px-2.5 py-2 rounded-lg bg-primary/10 border border-primary/15 text-primary text-[11px] font-medium truncate hover:bg-primary/15 transition-colors flex items-center gap-1.5"
+                          onClick={() => handleVideoClick(v)}
+                          className="mt-1.5 w-full text-left px-2.5 py-2 rounded-lg bg-primary/10 border border-primary/15 text-primary text-[11px] font-medium truncate hover:bg-primary/15 transition-colors flex items-center gap-1.5 cursor-pointer"
                         >
                           <Play className="h-2.5 w-2.5 shrink-0" />
-                          <span className="truncate" title={`${v.title} - ${formatTime(v.scheduled_for)}`}>
+                          <span className="truncate" title={`${v.title} - ${formatUtcAndSpain(v.scheduled_for)}`}>
                             {v.title}
                           </span>
-                        </motion.div>
+                        </motion.button>
                       ))}
                   </>
                 )}
@@ -311,6 +382,32 @@ const ContentCalendar = () => {
           </div>
         )}
       </motion.div>
+
+      <Dialog open={!!previewVideo} onOpenChange={(open) => !open && closePreview()}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {previewVideo?.title} — {previewVideo && formatUtcAndSpain(previewVideo.scheduled_for)}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            {previewLoading && (
+              <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                <span className="text-sm text-muted-foreground">Loading preview...</span>
+              </div>
+            )}
+            {previewUrl && !previewLoading && (
+              <video
+                src={previewUrl}
+                controls
+                autoPlay
+                className="w-full rounded-lg bg-black aspect-video"
+                playsInline
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 };

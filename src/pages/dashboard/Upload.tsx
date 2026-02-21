@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Upload as UploadIcon, X, Clock, CheckCircle2, FileVideo, Calendar } from "lucide-react";
@@ -25,18 +25,18 @@ const formatFileSize = (bytes: number) => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
-const getDefaultSchedule = () => {
-  const d = new Date();
-  const date = d.toISOString().slice(0, 10);
-  const hour = d.getUTCHours();
-  return { date, hour };
-};
-
 const UploadPage = () => {
   const [files, setFiles] = useState<PendingFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
-  const [defaultSchedule] = useState(getDefaultSchedule);
+  const [preferredHour, setPreferredHour] = useState<number>(12);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (!localStorage.getItem("access_token")) return;
+    apiFetch<{ preferred_upload_hour_utc?: number | null }>("/publishing/status")
+      .then((res) => setPreferredHour(res.preferred_upload_hour_utc ?? 12))
+      .catch(() => setPreferredHour(12));
+  }, []);
 
   const addFiles = useCallback(
     (newFiles: FileList | File[]) => {
@@ -54,14 +54,14 @@ const UploadPage = () => {
       const pending: PendingFile[] = valid.map((f) => ({
         id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
         file: f,
-        scheduledDate: defaultSchedule.date,
-        scheduledHour: defaultSchedule.hour,
+        scheduledDate: new Date().toISOString().slice(0, 10),
+        scheduledHour: preferredHour,
         progress: 0,
         status: "pending",
       }));
       setFiles((prev) => [...prev, ...pending]);
     },
-    [defaultSchedule, toast]
+    [preferredHour, toast]
   );
 
   const removeFile = (id: string) => setFiles((f) => f.filter((x) => x.id !== id));
@@ -278,7 +278,12 @@ const UploadPage = () => {
                     </div>
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                       <Clock className="h-3.5 w-3.5" />
-                      {item.scheduledDate} {String(item.scheduledHour).padStart(2, "0")}:00 UTC (±10 min)
+                      {item.scheduledDate} {String(item.scheduledHour).padStart(2, "0")}:00 UTC (
+                      {new Date(`${item.scheduledDate}T${String(item.scheduledHour).padStart(2, "0")}:00:00Z`).toLocaleTimeString(
+                        "en-GB",
+                        { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" }
+                      )}{" "}
+                      Spain) (±10 min)
                     </div>
                   </div>
                 )}
