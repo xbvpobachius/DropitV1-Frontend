@@ -16,7 +16,7 @@ const DashboardLayout = () => {
 
   const onboardingDone = Boolean(progress?.youtube_connected);
 
-  const showSidebar = !progressLoading && progress && (!onboardingDone || (onboardingDone && storesLimit > 1));
+  const showSidebar = !progressLoading && progress && onboardingDone;
 
   useEffect(() => {
     if (progressLoading || !onboardingDone || storesLimit > 1) return;
