@@ -1,15 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Youtube, CheckCircle2, ShieldCheck, Info } from "lucide-react";
+import { Youtube, CheckCircle2, ShieldCheck, Info, AlertCircle } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useToast } from "@/hooks/use-toast";
 import { useOnboardingFlow } from "@/hooks/useOnboardingFlow";
 import { apiFetch } from "@/lib/api";
+
+interface ChannelItem {
+  id: string;
+  platform: string;
+  post_connect_completed?: boolean;
+  scheduling_starts_at?: string | null;
+}
 
 const ConnectInstagram = () => {
   const navigate = useNavigate();
@@ -17,29 +23,90 @@ const ConnectInstagram = () => {
   const { toast } = useToast();
   const { progress, refetch } = useOnboardingFlow();
   const [isConnected, setIsConnected] = useState(false);
+  const [showPostConnect, setShowPostConnect] = useState(false);
+  const [channelInfo, setChannelInfo] = useState<{ post_connect_completed: boolean; scheduling_starts_at: string | null } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [clientId, setClientId] = useState("");
   const [clientSecret, setClientSecret] = useState("");
+  const [isNewChannel, setIsNewChannel] = useState<boolean | null>(null);
+  const [includeWarmup, setIncludeWarmup] = useState(false);
+
+  const justConnected = searchParams.get("youtube_connected") === "1";
+  const channelTitle = searchParams.get("channel_title");
+
+  // Fetch channel to check post_connect_completed
+  useEffect(() => {
+    if (!isConnected && !justConnected) return;
+    apiFetch<ChannelItem[]>("/channels")
+      .then((channels) => {
+        const yt = channels.find((c) => c.platform === "youtube");
+        if (yt) {
+          setChannelInfo({
+            post_connect_completed: yt.post_connect_completed ?? true,
+            scheduling_starts_at: yt.scheduling_starts_at ?? null,
+          });
+        }
+      })
+      .catch(() => setChannelInfo(null));
+  }, [isConnected, justConnected]);
 
   // Handle redirect from OAuth callback (youtube_connected=1)
   useEffect(() => {
-    const connected = searchParams.get("youtube_connected");
-    const channelTitle = searchParams.get("channel_title");
-    if (connected === "1") {
+    if (justConnected) {
       refetch();
       setIsConnected(true);
+      setShowPostConnect(true);
       toast({
         title: "YouTube connected successfully",
-        description: channelTitle ? `"${channelTitle}" is ready for automated publishing.` : "Your channel is ready for automated publishing.",
+        description: channelTitle ? `"${decodeURIComponent(channelTitle)}" connected.` : "Channel connected.",
       });
+    }
+  }, [justConnected, channelTitle, refetch, toast]);
+
+  // If channel already has post_connect_completed, skip questionnaire and go to calendar
+  useEffect(() => {
+    if (justConnected && channelInfo?.post_connect_completed) {
+      setShowPostConnect(false);
       navigate("/dashboard/calendar", { replace: true, state: { fromPreviousStep: true } });
     }
-  }, [searchParams, refetch, toast, navigate]);
+  }, [justConnected, channelInfo?.post_connect_completed, navigate]);
 
-  // If the user already connected YouTube, show connected state.
+  // If the user already connected YouTube (visited page without callback), show connected state.
   useEffect(() => {
-    if (progress?.youtube_connected) setIsConnected(true);
-  }, [progress?.youtube_connected]);
+    if (progress?.youtube_connected && !justConnected) setIsConnected(true);
+  }, [progress?.youtube_connected, justConnected]);
+
+  const handlePostConnectSubmit = async () => {
+    if (isNewChannel === null) {
+      toast({
+        title: "Please answer",
+        description: "Select whether this is a new channel or not.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await apiFetch<{ ok: boolean; scheduling_starts_at: string }>("/auth/youtube/post-connect-settings", {
+        method: "POST",
+        body: JSON.stringify({
+          is_new_channel: isNewChannel,
+          include_warmup_day: isNewChannel ? includeWarmup : undefined,
+        }),
+      });
+      setShowPostConnect(false);
+      refetch();
+      toast({
+        title: "Settings saved",
+        description: "Automatic scheduling will start on the date indicated.",
+      });
+      navigate("/dashboard/calendar", { replace: true, state: { fromPreviousStep: true } });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Failed to save settings";
+      toast({ title: "Error", description: msg, variant: "destructive" });
+      setSubmitting(false);
+    }
+  };
 
   /** First-time connect: save client_id/secret and redirect to Google */
   const handleConnectWithGoogle = async () => {
@@ -97,6 +164,8 @@ const ConnectInstagram = () => {
     }
   };
 
+  const daysUntilScheduling = isNewChannel && includeWarmup ? 3 : 2;
+
   return (
     <ProtectedRoute requiredStep="/dashboard/connect-youtube">
       <div className="p-8 pt-24 max-w-3xl mx-auto space-y-8 bg-blue-50/30 min-h-screen">
@@ -113,7 +182,73 @@ const ConnectInstagram = () => {
           </p>
         </div>
 
-        {isConnected ? (
+        {/* Post-connect questionnaire (shown right after OAuth callback) */}
+        {isConnected && showPostConnect ? (
+          <Card className="bg-white border border-border p-8">
+            <div className="flex items-start gap-3 mb-6">
+              <AlertCircle className="w-6 h-6 text-amber-500 shrink-0 mt-0.5" />
+              <div>
+                <h2 className="text-xl font-bold mb-2">Is this a new channel?</h2>
+                <p className="text-muted-foreground text-sm mb-4">
+                  The first 2 days after connecting, you must publish manually. Automatic scheduling will start after that period.
+                </p>
+                <div className="flex gap-3 mb-6">
+                  <Button
+                    variant={isNewChannel === true ? "default" : "outline"}
+                    onClick={() => setIsNewChannel(true)}
+                  >
+                    Yes, it&apos;s new
+                  </Button>
+                  <Button
+                    variant={isNewChannel === false ? "default" : "outline"}
+                    onClick={() => {
+                      setIsNewChannel(false);
+                      setIncludeWarmup(false);
+                    }}
+                  >
+                    No, it&apos;s existing
+                  </Button>
+                </div>
+                {isNewChannel === true && (
+                  <div className="p-4 rounded-lg bg-muted/50 border border-border mb-6">
+                    <p className="text-sm font-medium mb-2">
+                      If the channel was created today, warm it up by watching videos for 30 minutes before publishing.
+                    </p>
+                    <Label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={includeWarmup}
+                        onChange={(e) => setIncludeWarmup(e.target.checked)}
+                        className="rounded"
+                      />
+                      Include warmup day (add 1 extra day before auto-scheduling)
+                    </Label>
+                  </div>
+                )}
+                <div className="rounded-lg bg-primary/5 border border-primary/20 p-4 text-sm">
+                  <h3 className="font-semibold mb-2">Instructions</h3>
+                  <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                    <li>First 2 days: publish manually (no automatic publishing)</li>
+                    {isNewChannel && includeWarmup && (
+                      <li>If channel is new and created today: warm it up (watch videos 30 min)</li>
+                    )}
+                    <li>
+                      After {daysUntilScheduling} days: automatic scheduling will begin
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <Button
+              className="w-full"
+              size="lg"
+              onClick={handlePostConnectSubmit}
+              disabled={submitting || isNewChannel === null}
+            >
+              {submitting ? "Saving..." : "Continue to Dashboard"}
+            </Button>
+          </Card>
+        ) : isConnected && !showPostConnect ? (
           <Card className="bg-white border border-border p-12 text-center">
             <div className="flex flex-col items-center gap-4">
               <CheckCircle2 className="w-16 h-16 text-primary" />

@@ -8,9 +8,12 @@ import { Label } from "@/components/ui/label";
 import { apiFetch } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
+const filenameWithoutExtension = (name: string) => name.replace(/\.[^.]+$/, "");
+
 interface PendingFile {
   id: string;
   file: File;
+  description: string;
   scheduledDate: string;
   scheduledHour: number;
   progress: number;
@@ -111,6 +114,7 @@ const UploadPage = () => {
         return {
           id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
           file: f,
+          description: filenameWithoutExtension(f.name),
           scheduledDate: date,
           scheduledHour: hour,
           progress: 0,
@@ -132,9 +136,17 @@ const UploadPage = () => {
     );
   };
 
+  const updateFileDescription = (id: string, description: string) => {
+    setFiles((f) =>
+      f.map((x) => (x.id === id ? { ...x, description } : x))
+    );
+  };
+
   const uploadOne = async (pending: PendingFile): Promise<void> => {
     const form = new FormData();
     form.append("file", pending.file);
+    const desc = (pending.description || "").trim() || filenameWithoutExtension(pending.file.name);
+    form.append("description", desc);
     form.append("scheduled_date", pending.scheduledDate);
     form.append("scheduled_hour", String(pending.scheduledHour));
     setFiles((f) =>
@@ -331,6 +343,16 @@ const UploadPage = () => {
                 </div>
                 {item.status === "pending" && (
                   <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex items-center gap-2 flex-1 min-w-[180px]">
+                      <Label className="text-xs text-muted-foreground shrink-0">Description</Label>
+                      <Input
+                        type="text"
+                        value={item.description}
+                        onChange={(e) => updateFileDescription(item.id, e.target.value)}
+                        placeholder={filenameWithoutExtension(item.file.name)}
+                        className="h-9 rounded-lg min-w-0"
+                      />
+                    </div>
                     <div className="flex items-center gap-2">
                       <Label className="text-xs text-muted-foreground">Date</Label>
                       <Input
